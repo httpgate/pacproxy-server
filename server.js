@@ -3,18 +3,16 @@
 const pacProxy = require('pacProxy-js');
 const fs = require('fs');
 
-if(!process.argv[1]) return;
-var domain = process.argv[1];
+if(!process.argv[2]) return;
+var domain = process.argv[2];
 console.log("\r\ndomain: " + domain + '\r\n');
 
-let domaincfg = fs.readFileSync('./'+domain);
-let domainConfig = JSON.parse( domaincfg );
+let domainConfig = require('./' + domain );
 
 let rawdata = fs.readFileSync('./greenlock.d/config.json');
 let config = JSON.parse(rawdata);
 let accountEmail = config.defaults.subscriberEmail;
-console.log("\r\nmaintainer:" + config.defaults.subscriberEmail + '\r\n');
-console.log(config.defaults.subscriberEmail);
+console.log("maintainer: " + config.defaults.subscriberEmail + '\r\n');
 
 
 require('greenlock-express')
@@ -32,6 +30,7 @@ function httpsWorker(glx) {
     domainConfig.port = 443;
     domainConfig.domain = domain;
     domainConfig.proxyport = 443;
+
     pacProxy.load(domainConfig);
     
     var httpsServer = glx.httpsServer(null, function(req, res) {
@@ -53,4 +52,6 @@ function httpsWorker(glx) {
     httpServer.listen(80, "0.0.0.0", function() {
         console.info("Listening on ", httpServer.address());
     });
+
+    console.log("\r\nshare your pac url:  \r\n%s\r\n", 'https://'+ domainConfig.domain +domainConfig.paclink );
 }
