@@ -23,6 +23,8 @@ git clone https://github.com/httpgate/pacproxy-server
 
 cd pacproxy-server
 
+chmod a+x ./pacpinit.sh
+
 ./pacpinit.sh your@email your.site.domain
 
 修改保存配置文件： your.site.domain

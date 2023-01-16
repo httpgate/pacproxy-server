@@ -1,6 +1,6 @@
 'use strict';
 
-const pacProxy = require('pacProxy-js');
+const pacProxy = require('pacproxy-js');
 const fs = require('fs');
 var domain = false;
 var domainConfig = false;
