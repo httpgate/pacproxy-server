@@ -2,30 +2,59 @@
 
 const pacProxy = require('pacProxy-js');
 const fs = require('fs');
+var domain = false;
+var domainConfig = false;
+var accountEmail = false;
 
-if(!process.argv[2]) return;
-var domain = process.argv[2];
-console.log("\r\ndomain: " + domain + '\r\n');
+exports.load = load;
+exports.startServer = startServer;
 
-let domainConfig = require('./' + domain );
+run();
 
-let rawdata = fs.readFileSync('./greenlock.d/config.json');
-let config = JSON.parse(rawdata);
-let accountEmail = config.defaults.subscriberEmail;
-console.log("maintainer: " + config.defaults.subscriberEmail + '\r\n');
+function run(){
+	if(!process.argv[1].includes(__filename)) return;  //used as a module
+    if(load()) startServer();
+}
 
 
-require('greenlock-express')
-    .init({
-        packageRoot: __dirname,
-        configDir: "./greenlock.d",
-        maintainerEmail: accountEmail,
-        cluster: false
-    })
-    .ready(httpsWorker);
+function load(vdomain, vdomainConfig)
+{
+
+    if(!vdomain){
+        if(!process.argv[2]) return false;
+        domain = process.argv[2];
+        console.log("\r\ndomain: " + domain + '\r\n');
+    } else domain = vdomain;
+
+    if(!vdomainConfig) domainConfig = require('./' + domain );
+    else domainConfig = vdomainConfig;
+
+    if(!domainConfig) return false;
+
+    let rawdata = fs.readFileSync('./greenlock.d/config.json');
+    let config = JSON.parse(rawdata);
+    accountEmail = config.defaults.subscriberEmail;
+    if(!accountEmail) return false;
+    console.log("maintainer: " + config.defaults.subscriberEmail + '\r\n');
+
+    return true;
+}
+
+
+function startServer()
+{
+    require('greenlock-express')
+        .init({
+            packageRoot: __dirname,
+            configDir: "./greenlock.d",
+            maintainerEmail: accountEmail,
+            cluster: false
+        })
+        .ready(httpsWorker);
+}
+
 
 function httpsWorker(glx) {
-
     domainConfig.https = true;
     domainConfig.port = 443;
     domainConfig.domain = domain;
