@@ -2,6 +2,8 @@
 
 pacproxy runs in a web server 在vps服务器上运行的pacproxy
 
+自动获取SSL数字证书，自动加载SSL数字证书
+
 关于pacproxy参见[pacproxy.js](https://github.com/httpgate/pacproxy.js)
 
 ## 准备
