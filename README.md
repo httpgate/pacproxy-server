@@ -17,7 +17,7 @@ pacproxy runs in a web server 在vps服务器上运行的pacproxy
 
 ## 运行
 
-第一次运行：
+* 第一次运行：
 
 git clone https://github.com/httpgate/pacproxy-server
 
@@ -25,9 +25,9 @@ cd pacproxy-server
 
 pacpinit.sh your@email your.site.domain
 
-nano your.site.domain
+修改保存配置文件： your.site.domain
 
 
-运行pacproxy服务：
+* 以后每次运行pacproxy服务：
 
 npm start your.site.domain
