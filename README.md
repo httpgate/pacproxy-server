@@ -29,6 +29,10 @@ chmod a+x ./pacpinit.sh
 
 修改保存配置文件： your.site.domain
 
+sudo ufw allow http
+
+sudo ufw allow https
+
 
 * 以后每次运行pacproxy服务：
 
