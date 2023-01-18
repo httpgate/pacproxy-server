@@ -54,7 +54,7 @@ function load(vdomain, vdomainConfig, vaccountEmail)
         let config = JSON.parse(rawdata);
         accountEmail = config.defaults.subscriberEmail;
     }        
-    console.log("maintainer: " + config.defaults.subscriberEmail + '\r\n');
+    console.log("maintainer: " + accountEmail + '\r\n');
     if(!accountEmail) return false;
 
     return true;
