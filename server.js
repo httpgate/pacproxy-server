@@ -5,7 +5,6 @@ const fs = require('fs');
 var domain = false;
 var domainConfig = false;
 var accountEmail = false;
-var fatalError= false;
 
 exports.load = load;
 exports.startServer = startServer;
@@ -16,13 +15,6 @@ function runServer(){
 	if(!process.argv[1].includes(__filename)) return;  //used as a module
     if(load()) startServer();
 }
-
-
-function fatalHandler(err, result) {
-    if(err) console.log('error', err);
-    fatalError = err ? true : false;
-}
-
 
 function load(vdomain, vdomainConfig, vaccountEmail)
 {
@@ -41,6 +33,14 @@ function load(vdomain, vdomainConfig, vaccountEmail)
         fs.copyFileSync('example.site.domain', 'default.site.cfg');
         fs.copyFileSync('example.site.domain', domain);
     }
+
+    greenlock.get({ domain }).then(function (site) {
+        if (!site) {
+            console.log(domain + ' was not found, Adding Now');
+            greenlock.manager.add(domain, [domain]);    
+        }
+    }
+
     if(!fatalError)  domainConfig = require('./' + domain );
 
     console.log("\r\ndomain config: \r\n");
@@ -87,7 +87,6 @@ function httpsWorker(glx) {
     });
 
 	httpsServer.on('connect', pacProxy.handleConnect);
-
 
     httpsServer.listen(443, "0.0.0.0", function() {
         console.info("Listening on ", httpsServer.address());
