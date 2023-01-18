@@ -33,7 +33,7 @@ nano default.site.cfg
   编辑默认网站设置并保存，它是新增网站的设置模板
 
 
-* 第一次运行pacproxy服务：
+### 第一次运行pacproxy服务：
 
 ```
 npm start your.site.domain your@email.address
@@ -42,7 +42,7 @@ npm start your.site.domain your@email.address
 
 
 
-* 以后每次运行pacproxy服务：
+### 以后每次运行pacproxy服务：
 
 ```
 nohup npm start your.site.domain > pacproxy.log >2&1  & 
@@ -54,7 +54,7 @@ nohup npm start your.site.domain > pacproxy.log >2&1  &
 cat pacproxy.log
 ```
 
-* 关闭网站并升级Github代码：
+### 关闭网站并升级Github代码：
 
 ```
 ps -ef | grep node
