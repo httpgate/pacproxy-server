@@ -1,6 +1,7 @@
 'use strict';
 
 const pacProxy = require('pacproxy-js');
+const greenlock = require('greenlock-express');
 const fs = require('fs');
 var domain = false;
 var domainConfig = false;
@@ -63,8 +64,7 @@ function load(vdomain, vdomainConfig, vaccountEmail)
 
 function startServer()
 {
-    require('greenlock-express')
-        .init({
+    greenlock.init({
             packageRoot: __dirname,
             configDir: "./greenlock.d",
             maintainerEmail: accountEmail,
