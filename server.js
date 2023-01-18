@@ -28,23 +28,12 @@ function load(vdomain, vdomainConfig, vaccountEmail)
 
     if(vdomainConfig) domainConfig = vdomainConfig;
     else if(fs.existsSync(domain)) domainConfig = require('./' + domain );
-    else if(fs.existsSync('default.site.cfg')) fs.copyFileSync('default.site.cfg', domain);
     else {
-        console.log("/r/n Please Modify site config file: default.site.cfg and " + domain + "/r/n");
-        fs.copyFileSync('example.site.domain', 'default.site.cfg');
-        fs.copyFileSync('example.site.domain', domain);
+        console.log("/r/n Please add this domain use command: ./pacpadd.sh " + domain + "/r/n");
+        return false;
     }
 
-    console.log(greenlock);
-    //greenlock.manager.add(domain, [domain]);    
-    // greenlock.manager.get({ domain }).then(function (site) {
-    //     if (!site) {
-    //         console.log(domain + ' was not found, Adding Now');
-    //         greenlock.manager.add(domain, [domain]);    
-    //     }
-    // });
-
-    if(!fatalError)  domainConfig = require('./' + domain );
+    domainConfig = require('./' + domain );
 
     console.log("\r\ndomain config: \r\n");
     console.log(domainConfig);
@@ -83,8 +72,6 @@ function startServer()
 
 
 function httpsWorker(glx) {
-
-    pacProxy.load(domainConfig);
     
     var httpsServer = glx.httpsServer(null, function(req, res) {
         pacProxy.handleRequest(req, res);
@@ -103,7 +90,7 @@ function httpsWorker(glx) {
 
     httpServer.listen(domainConfig.httpport, "0.0.0.0", function() {
         console.info("Listening on ", httpServer.address());
+        console.log("\r\nshare your pac url:  \r\n%s\r\n", 'https://'+ domainConfig.domain + domainConfig.paclink +"\r\n");
     });
 
-    console.log("\r\nshare your pac url:  \r\n%s\r\n", 'https://'+ domainConfig.domain + domainConfig.paclink +"\r\n");
 }

@@ -18,7 +18,8 @@ pacproxy runs in a web server 在vps服务器上运行的pacproxy
 
 ## 运行
 
-* 初始化服务器，并修改网站设置模板
+
+### 初始化服务器，并修改网站设置模板
 
 ```
 git clone https://github.com/httpgate/pacproxy-server
@@ -27,11 +28,20 @@ cd pacproxy-server
 
 ./pacpinit.sh
 
+npx greenlock add --subject your.site.domain --your.site.domain
+
 nano default.site.cfg
 ```
 
   编辑默认网站设置并按Ctrl + O保存，Ctrl + X退出，它是以后新增网站的设置模板
 
+### 增加域名，如果域名被封锁可以增加新的域名：
+
+```
+./pacpadd.sh your.site.domain
+
+```
+  编辑域名设置并按Ctrl + O保存，Ctrl + X退出
 
 ### 第一次运行pacproxy服务：
 
@@ -45,7 +55,7 @@ npm start your.site.domain your@email.address
 ```
 nano your.site.domain 
 ```
-  编辑这个域名设置并按Ctrl + O保存，Ctrl + X退出
+  编辑域名设置并按Ctrl + O保存，Ctrl + X退出
 
 ### 以后每次运行pacproxy服务：
 
