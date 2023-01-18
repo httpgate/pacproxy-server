@@ -13,7 +13,7 @@ runServer(function(err, result) {
     if(err) console.log('error', err);
   });
 
-function runServer(){
+function runServer(errHandle){
 	if(!process.argv[1].includes(__filename)) return;  //used as a module
     if(load()) startServer();
 }
@@ -30,11 +30,11 @@ function load(vdomain, vdomainConfig, vaccountEmail)
 
     if(vdomainConfig) domainConfig = vdomainConfig;
     else if(fs.existsSync('./' + domain)) domainConfig = require('./' + domain );
-    else if(fs.existsSync('./default.site.cfg')) fs.copyFile('./default.site.cfg', './'+domain);
+    else if(fs.existsSync('./default.site.cfg')) fs.copyFile('./default.site.cfg', './'+domain, errHandle);
     else {
         config.log("/r/n!!! Please Modify site config file: default.site.cfg and " + domain + '/r/n');
-        fs.copyFile('./example.site.domain', './default.site.cfg');
-        fs.copyFile('./example.site.domain', './'+domain);
+        fs.copyFile('./example.site.domain', './default.site.cfg', errHandle);
+        fs.copyFile('./example.site.domain', './'+domain, errHandle);
     }
 
     console.log("\r\ndomain config: \r\n");
