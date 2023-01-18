@@ -34,10 +34,10 @@ function load(vdomain, vdomainConfig, vaccountEmail)
     } else domain = vdomain;
 
     if(vdomainConfig) domainConfig = vdomainConfig;
-    else if(fs.existsSync('./' + domain),fatalError) domainConfig = require('./' + domain );
-    else if(fs.existsSync('./default.site.cfg'),fatalError) fs.copyFile('./default.site.cfg', './'+domain, fatalError);
+    else if(fs.existsSync(domain),fatalError) domainConfig = require('./' + domain );
+    else if(fs.existsSync('default.site.cfg'),fatalError) fs.copyFile('default.site.cfg', domain, fatalError);
     else {
-        config.log("/r/n Please Modify site config file: default.site.cfg and " + domain + '/r/n');
+        config.log("/r/n Please Modify site config file: default.site.cfg and " + domain + "/r/n");
         fs.copyFile('example.site.domain', 'default.site.cfg', fatalError);
         fs.copyFile('example.site.domain', domain, fatalError);
     }
