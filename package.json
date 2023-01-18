@@ -23,6 +23,6 @@
   "homepage": "https://github.com/httpgate/pacproxy-server#readme",
   "dependencies": {
     "greenlock-express": "^4.0.3",
-    "pacproxy-js": "^1.0.2"
+    "pacproxy-js": "^1.0.3"
   }
 }

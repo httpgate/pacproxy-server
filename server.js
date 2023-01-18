@@ -17,7 +17,7 @@ function run(){
 }
 
 
-function load(vdomain, vdomainConfig)
+function load(vdomain, vdomainConfig, vaccountEmail)
 {
 
     if(!vdomain){
@@ -26,16 +26,28 @@ function load(vdomain, vdomainConfig)
         console.log("\r\ndomain: " + domain + '\r\n');
     } else domain = vdomain;
 
-    if(!vdomainConfig) domainConfig = require('./' + domain );
-    else domainConfig = vdomainConfig;
+    if(vdomainConfig) domainConfig = vdomainConfig;
+    else if(fs.existsSync('./' + domain)) domainConfig = require('./' + domain );
+    else if(fs.existsSync('./default.site.cfg')) fs.copyFile('./default.site.cfg', './'+domain);
+    else {
+        config.log("/r/n!!! Please Modify site config file: default.site.cfg and " + domain + '/r/n');
+        fs.copyFile('./example.site.domain', './default.site.cfg');
+        fs.copyFile('./example.site.domain', './'+domain);
+    }
 
+    console.log("\r\ndomain config: \r\n");
+    console.log(domainConfig);
     if(!domainConfig) return false;
 
-    let rawdata = fs.readFileSync('./greenlock.d/config.json');
-    let config = JSON.parse(rawdata);
-    accountEmail = config.defaults.subscriberEmail;
-    if(!accountEmail) return false;
+    if(vaccountEmail) accountEmail = vaccountEmail;
+    else if(process.argv[3]) accountEmail = vaccountEmail;
+    else {
+        let rawdata = fs.readFileSync('./greenlock.d/config.json');
+        let config = JSON.parse(rawdata);
+        accountEmail = config.defaults.subscriberEmail;
+    }        
     console.log("maintainer: " + config.defaults.subscriberEmail + '\r\n');
+    if(!accountEmail) return false;
 
     return true;
 }
@@ -82,5 +94,4 @@ function httpsWorker(glx) {
         console.info("Listening on ", httpServer.address());
     });
 
-    console.log("\r\nshare your pac url:  \r\n%s\r\n", 'https://'+ domainConfig.domain +domainConfig.paclink );
-}
+    console.log("\r\nshare your pac url:  \r\n%s\r\n", 'https://'+ domainConfig.domain + domainConfig.paclink +"\r\n");
