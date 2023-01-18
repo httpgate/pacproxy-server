@@ -30,7 +30,7 @@ cd pacproxy-server
 nano default.site.cfg
 ```
 
-  编辑默认网站设置并保存，它是新增网站的设置模板
+  编辑默认网站设置并按Ctrl + C保存，Ctrl + C退出，它是以后新增网站的设置模板
 
 
 ### 第一次运行pacproxy服务：

@@ -9,9 +9,9 @@ var accountEmail = false;
 exports.load = load;
 exports.startServer = startServer;
 
-run();
+runServer();
 
-function run(){
+function runServer(){
 	if(!process.argv[1].includes(__filename)) return;  //used as a module
     if(load()) startServer();
 }
