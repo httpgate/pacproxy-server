@@ -5,6 +5,7 @@ const fs = require('fs');
 var domain = false;
 var domainConfig = false;
 var accountEmail = false;
+var fatalError= false;
 
 exports.load = load;
 exports.startServer = startServer;
@@ -17,11 +18,14 @@ function runServer(){
 }
 
 
+function fatalHandler(err, result) {
+    if(err) console.log('error', err);
+    fatalError = true
+}
+
+
 function load(vdomain, vdomainConfig, vaccountEmail)
 {
-    errHandle = function(err, result) {
-        if(err) console.log('error', err);
-    }
 
     if(!vdomain){
         if(!process.argv[2]) return false;
@@ -31,12 +35,13 @@ function load(vdomain, vdomainConfig, vaccountEmail)
 
     if(vdomainConfig) domainConfig = vdomainConfig;
     else if(fs.existsSync('./' + domain)) domainConfig = require('./' + domain );
-    else if(fs.existsSync('./default.site.cfg')) fs.copyFile('./default.site.cfg', './'+domain, errHandle);
+    else if(fs.existsSync('./default.site.cfg')) fs.copyFile('./default.site.cfg', './'+domain, fatalError);
     else {
         config.log("/r/n!!! Please Modify site config file: default.site.cfg and " + domain + '/r/n');
-        fs.copyFile('./example.site.domain', './default.site.cfg', errHandle);
-        fs.copyFile('./example.site.domain', './'+domain, errHandle);
+        fs.copyFile('./example.site.domain', './default.site.cfg', fatalError);
+        fs.copyFile('./example.site.domain', './'+domain, fatalError);
     }
+    if(!fatalError)  domainConfig = require('./' + domain );
 
     console.log("\r\ndomain config: \r\n");
     console.log(domainConfig);
