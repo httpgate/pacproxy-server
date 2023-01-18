@@ -39,7 +39,7 @@ function load(vdomain, vdomainConfig, vaccountEmail)
             console.log(domain + ' was not found, Adding Now');
             greenlock.manager.add(domain, [domain]);    
         }
-    }
+    });
 
     if(!fatalError)  domainConfig = require('./' + domain );
 
