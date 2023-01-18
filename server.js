@@ -20,7 +20,7 @@ function runServer(){
 
 function fatalHandler(err, result) {
     if(err) console.log('error', err);
-    fatalError = true
+    fatalError = err ? true : false;
 }
 
 
@@ -34,12 +34,12 @@ function load(vdomain, vdomainConfig, vaccountEmail)
     } else domain = vdomain;
 
     if(vdomainConfig) domainConfig = vdomainConfig;
-    else if(fs.existsSync(domain),fatalError) domainConfig = require('./' + domain );
-    else if(fs.existsSync('default.site.cfg'),fatalError) fs.copyFile('default.site.cfg', domain, fatalError);
+    else if(fs.existsSync(domain),fatalHandler) domainConfig = require('./' + domain );
+    else if(fs.existsSync('default.site.cfg'),fatalHandler) fs.copyFile('default.site.cfg', domain, fatalHandler);
     else {
         console.log("/r/n Please Modify site config file: default.site.cfg and " + domain + "/r/n");
-        fs.copyFile('example.site.domain', 'default.site.cfg', fatalError);
-        fs.copyFile('example.site.domain', domain, fatalError);
+        fs.copyFile('example.site.domain', 'default.site.cfg', fatalHandler);
+        fs.copyFile('example.site.domain', domain, fatalHandler);
     }
     if(!fatalError)  domainConfig = require('./' + domain );
 
@@ -50,7 +50,7 @@ function load(vdomain, vdomainConfig, vaccountEmail)
     if(vaccountEmail) accountEmail = vaccountEmail;
     else if(process.argv[3]) accountEmail = vaccountEmail;
     else {
-        let rawdata = fs.readFileSync('./greenlock.d/config.json');
+        let rawdata = fs.readFileSync('./greenlock.d/config.json',fatalHandler);
         let config = JSON.parse(rawdata);
         accountEmail = config.defaults.subscriberEmail;
     }        
