@@ -54,7 +54,7 @@ nohup npm start your.site.domain > pacproxy.log >2&1  &
 cat pacproxy.log
 ```
 
-### 关闭网站并升级Github代码：
+### 关闭服务并升级Github代码：
 
 ```
 ps -ef | grep node
