@@ -34,12 +34,12 @@ function load(vdomain, vdomainConfig, vaccountEmail)
     } else domain = vdomain;
 
     if(vdomainConfig) domainConfig = vdomainConfig;
-    else if(fs.existsSync(domain),fatalHandler) domainConfig = require('./' + domain );
-    else if(fs.existsSync('default.site.cfg'),fatalHandler) fs.copyFile('default.site.cfg', domain, fatalHandler);
+    else if(fs.existsSync(domain)) domainConfig = require('./' + domain );
+    else if(fs.existsSync('default.site.cfg')) fs.copyFileSync('default.site.cfg', domain);
     else {
         console.log("/r/n Please Modify site config file: default.site.cfg and " + domain + "/r/n");
-        fs.copyFile('example.site.domain', 'default.site.cfg', fatalHandler);
-        fs.copyFile('example.site.domain', domain, fatalHandler);
+        fs.copyFileSync('example.site.domain', 'default.site.cfg');
+        fs.copyFileSync('example.site.domain', domain);
     }
     if(!fatalError)  domainConfig = require('./' + domain );
 
@@ -50,7 +50,7 @@ function load(vdomain, vdomainConfig, vaccountEmail)
     if(vaccountEmail) accountEmail = vaccountEmail;
     else if(process.argv[3]) accountEmail = vaccountEmail;
     else {
-        let rawdata = fs.readFileSync('./greenlock.d/config.json',fatalHandler);
+        let rawdata = fs.readFileSync('./greenlock.d/config.json');
         let config = JSON.parse(rawdata);
         accountEmail = config.defaults.subscriberEmail;
     }        
