@@ -30,15 +30,16 @@ cd pacproxy-server
 nano default.site.cfg
 ```
 
-编辑默认网站设置并保存，它是新增网站的设置模板
+  编辑默认网站设置并保存，它是新增网站的设置模板
+
 
 * 第一次运行pacproxy服务：
 
 ```
 npm start your.site.domain your@email.address
-
 ```
-确认运行正常后 Ctrl + C
+确认运行正常后 Ctrl + C 退出
+
 
 
 * 以后每次运行pacproxy服务：
@@ -47,7 +48,7 @@ npm start your.site.domain your@email.address
 nohup npm start your.site.domain > pacproxy.log >2&1  & 
 ```
 
-加nohup 和 & 可以关闭ssh终端后还可以后台运行, 查看日志：
+  加nohup 和 & 可以关闭ssh终端后还可以后台运行, 查看日志：
 
 ```
 cat pacproxy.log
@@ -60,5 +61,4 @@ ps -ef | grep node
 kill -9 找到的pid
 git pull
 npm update
-
 ```
