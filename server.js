@@ -35,12 +35,13 @@ function load(vdomain, vdomainConfig, vaccountEmail)
         fs.copyFileSync('example.site.domain', domain);
     }
 
-    greenlock.manager.get({ domain }).then(function (site) {
-        if (!site) {
-            console.log(domain + ' was not found, Adding Now');
-            greenlock.manager.add(domain, [domain]);    
-        }
-    });
+    greenlock.manager.add(domain, [domain]);    
+    // greenlock.manager.get({ domain }).then(function (site) {
+    //     if (!site) {
+    //         console.log(domain + ' was not found, Adding Now');
+    //         greenlock.manager.add(domain, [domain]);    
+    //     }
+    // });
 
     if(!fatalError)  domainConfig = require('./' + domain );
 
