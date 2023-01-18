@@ -35,7 +35,7 @@ function load(vdomain, vdomainConfig, vaccountEmail)
         fs.copyFileSync('example.site.domain', domain);
     }
 
-    greenlock.get({ domain }).then(function (site) {
+    greenlock.manager.get({ domain }).then(function (site) {
         if (!site) {
             console.log(domain + ' was not found, Adding Now');
             greenlock.manager.add(domain, [domain]);    
@@ -58,6 +58,12 @@ function load(vdomain, vdomainConfig, vaccountEmail)
     console.log("maintainer: " + accountEmail + '\r\n');
     if(!accountEmail) return false;
 
+    domainConfig.domain = domain;
+    if(!domainConfig.https) domainConfig.https = true;
+    if(!domainConfig.httpport) domainConfig.httpport = 80;
+    if(!domainConfig.port) domainConfig.port = 443;
+    if(!domainConfig.proxyport) domainConfig.proxyport = 443;
+
     return true;
 }
 
@@ -75,10 +81,6 @@ function startServer()
 
 
 function httpsWorker(glx) {
-    domainConfig.https = true;
-    domainConfig.port = 443;
-    domainConfig.domain = domain;
-    domainConfig.proxyport = 443;
 
     pacProxy.load(domainConfig);
     
@@ -88,7 +90,7 @@ function httpsWorker(glx) {
 
 	httpsServer.on('connect', pacProxy.handleConnect);
 
-    httpsServer.listen(443, "0.0.0.0", function() {
+    httpsServer.listen(domainConfig.port, "0.0.0.0", function() {
         console.info("Listening on ", httpsServer.address());
     });
 
@@ -97,7 +99,7 @@ function httpsWorker(glx) {
     // (the ACME and http->https middleware are loaded by glx.httpServer)
     var httpServer = glx.httpServer();
 
-    httpServer.listen(80, "0.0.0.0", function() {
+    httpServer.listen(domainConfig.httpport, "0.0.0.0", function() {
         console.info("Listening on ", httpServer.address());
     });
 
