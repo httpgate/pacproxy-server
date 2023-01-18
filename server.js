@@ -48,7 +48,7 @@ function load(vdomain, vdomainConfig, vaccountEmail)
     if(!domainConfig) return false;
 
     if(vaccountEmail) accountEmail = vaccountEmail;
-    else if(process.argv[3]) accountEmail = vaccountEmail;
+    else if(process.argv[3]) accountEmail = process.argv[3];
     else {
         let rawdata = fs.readFileSync('./greenlock.d/config.json');
         let config = JSON.parse(rawdata);
