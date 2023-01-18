@@ -9,11 +9,9 @@ var accountEmail = false;
 exports.load = load;
 exports.startServer = startServer;
 
-runServer(function(err, result) {
-    if(err) console.log('error', err);
-  });
+runServer();
 
-function runServer(errHandle){
+function runServer(){
 	if(!process.argv[1].includes(__filename)) return;  //used as a module
     if(load()) startServer();
 }
@@ -21,6 +19,9 @@ function runServer(errHandle){
 
 function load(vdomain, vdomainConfig, vaccountEmail)
 {
+    errHandle = function(err, result) {
+        if(err) console.log('error', err);
+    }
 
     if(!vdomain){
         if(!process.argv[2]) return false;
