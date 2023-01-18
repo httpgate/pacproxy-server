@@ -43,7 +43,20 @@ npm start your.site.domain your@email.address
 * 以后每次运行pacproxy服务：
 
 ```
-nohup npm start your.site.domain & 
+nohup npm start your.site.domain > pacproxy.log >2&1  & 
 ```
 
-加nohup 和 & 可以关闭ssh终端后还可以后台运行
+加nohup 和 & 可以关闭ssh终端后还可以后台运行, 查看日志：
+
+```
+cat pacproxy.log
+```
+
+* 关闭网站并升级Github代码：
+
+```
+ps -ef | grep node
+kill -9 找到的pid
+git pull
+
+```

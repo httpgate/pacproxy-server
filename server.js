@@ -95,3 +95,4 @@ function httpsWorker(glx) {
     });
 
     console.log("\r\nshare your pac url:  \r\n%s\r\n", 'https://'+ domainConfig.domain + domainConfig.paclink +"\r\n");
+}
