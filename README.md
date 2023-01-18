@@ -18,14 +18,12 @@ pacproxy runs in a web server 在vps服务器上运行的pacproxy
 
 ## 运行
 
-* 初始化服务器
+* 初始化服务器，并修改网站设置模板
 
 ```
 git clone https://github.com/httpgate/pacproxy-server
 
 cd pacproxy-server
-
-chmod a+x ./pacpinit.sh
 
 ./pacpinit.sh
 
@@ -38,7 +36,10 @@ nano default.site.cfg
 
 ```
 npm start your.site.domain your@email.address
+
 ```
+确认运行正常后 Ctrl + C
+
 
 * 以后每次运行pacproxy服务：
 
@@ -58,5 +59,6 @@ cat pacproxy.log
 ps -ef | grep node
 kill -9 找到的pid
 git pull
+npm update
 
 ```
