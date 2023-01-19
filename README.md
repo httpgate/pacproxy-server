@@ -74,10 +74,10 @@ git pull
 npm update
 ```
 
-### 如果中间哪一步做错可以保存下当前修改从头再来：
+### 如果中间做错可以删掉从头再来：
 
 ```
 cd ..
-mv pacproxy-server pacproxy-serverbak
+rm -rf ./pacproxy-server
 ```
   然后就可以从第一步重新开始做
