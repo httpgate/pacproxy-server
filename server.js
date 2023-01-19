@@ -8,7 +8,7 @@ const { get } = require('http');
 var currentConfig = false;
 var accountEmail = false;
 
-exports.load = load;
+exports.runServer = runServer;
 exports.startServer = startServer;
 
 runServer();

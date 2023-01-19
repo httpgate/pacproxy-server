@@ -28,7 +28,7 @@ cd pacproxy-server
 ./pacpinit.sh
 
 ```
-  编辑默认网站设置并按Ctrl + O保存，Ctrl + X退出
+  编辑当前网站设置并按Ctrl + O保存，Ctrl + X退出
 
   初始化SSL存储，下面your@email.address要改成你的email:
 ```
@@ -55,7 +55,7 @@ npm start
 ```
 nano current.site.cfg 
 ```
-  编辑域名设置并按Ctrl + O保存，Ctrl + X退出
+  编辑当前设置并按Ctrl + O保存，Ctrl + X退出
 
 ### 以后每次运行pacproxy服务：
 
@@ -68,7 +68,7 @@ nohup npm start > pacproxy.log >2&1  &
 cat pacproxy.log
 ```
 
-### 关闭pacproxy服务并升级Github代码：
+### 停止pacproxy服务并升级Github代码：
 
 ```
 ps -ef | grep node
