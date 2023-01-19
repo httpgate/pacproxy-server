@@ -44,7 +44,7 @@ function loadConfig()
     if(!currentConfig.port) currentConfig.port = 443;
     if(!currentConfig.proxyport) currentConfig.proxyport = 443;
 
-    app.currentConfig = currentConfig;
+    app.setConfig(currentConfig);
     return true;
 }
 
