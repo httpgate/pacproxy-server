@@ -15,10 +15,8 @@ runServer();
 
 function runServer(currentConfig){
 	if(!process.argv[1].includes(__filename)) return;  //used as a module
-    if(!currentConfig) var loadSuccess = loadConfig();
-    if(!loadSuccess) return;
-    app.currentConfig = currentConfig;
-    startServer();
+    if(!currentConfig) {
+        if(loadConfig()) startServer();
 }
 
 function loadConfig()
@@ -29,7 +27,6 @@ function loadConfig()
         console.log("/r/n Please Modify your site config file /r/n");
         return false;
     }
-    currentConfig = require('./current.site.cfg');
 
     console.log("\r\ndomain config:");
     console.log(currentConfig);
@@ -45,6 +42,8 @@ function loadConfig()
     if(!currentConfig.httpport) currentConfig.httpport = 80;
     if(!currentConfig.port) currentConfig.port = 443;
     if(!currentConfig.proxyport) currentConfig.proxyport = 443;
+
+    app.currentConfig = currentConfig;
     return true;
 }
 
