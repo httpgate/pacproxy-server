@@ -18,7 +18,6 @@ pacproxy runs in a web server 在vps服务器上运行的pacproxy
 
 ## 运行
 
-
 ### 初始化服务器，并修改网站设置模板
 
 ```
@@ -26,16 +25,18 @@ git clone https://github.com/httpgate/pacproxy-server
 
 cd pacproxy-server
 
-./pacpinit.sh your@email.address
+./pacpinit.sh
 
+npx greenlock init --config-dir greenlock.d --maintainer-email <span style="color: red">your@email.address</span>
 ```
 
   编辑默认网站设置并按Ctrl + O保存，Ctrl + X退出
 
+
 ### 增加域名，如果域名被封锁可以增加新的域名, 旧域名也仍然有效：
 
 ```
-npx greenlock add --subject your.site.domain --altnames you.site.domain
+npx greenlock add --subject <span style="color: red">your.site.domain</span> --altnames <span style="color: red">you.site.domain</span>
 
 ```
   编辑域名设置并按Ctrl + O保存，Ctrl + X退出
