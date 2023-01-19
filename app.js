@@ -11,7 +11,7 @@ function httpsWorker(glx) {
 
 	httpsServer.on('connect', pacProxy.handleConnect);
 
-    httpsServer.listen(domainConfig.port, "0.0.0.0", function() {
+    httpsServer.listen(currentConfig.port, "0.0.0.0", function() {
         console.info("Listening on ", httpsServer.address());
     });
 
@@ -20,9 +20,9 @@ function httpsWorker(glx) {
     // (the ACME and http->https middleware are loaded by glx.httpServer)
     var httpServer = glx.httpServer();
 
-    httpServer.listen(domainConfig.httpport, "0.0.0.0", function() {
+    httpServer.listen(currentConfig.httpport, "0.0.0.0", function() {
         console.info("Listening on ", httpServer.address());
-        console.log("\r\nshare your pac url:  \r\n%s\r\n", 'https://'+ domainConfig.domain + domainConfig.paclink +"\r\n");
+        console.log("\r\nshare your pac url:  \r\n%s\r\n", 'https://'+ currentConfig.domain + currentConfig.paclink +"\r\n");
     });
 
 }
