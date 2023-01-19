@@ -1,9 +1,9 @@
 'use strict';
 const pacProxy = require('pacproxy-js');
-var currentConfig = false;
+this.currentConfig = false;
 
 function httpsWorker(glx) {
-    pacProxy.load(currentConfig);
+    pacProxy.load(this.currentConfig);
 
     var httpsServer = glx.httpsServer(null, function(req, res) {
         pacProxy.handleRequest(req, res);
@@ -11,7 +11,7 @@ function httpsWorker(glx) {
 
 	httpsServer.on('connect', pacProxy.handleConnect);
 
-    httpsServer.listen(currentConfig.port, "0.0.0.0", function() {
+    httpsServer.listen(this.currentConfig.port, "0.0.0.0", function() {
         console.info("Listening on ", httpsServer.address());
     });
 
@@ -20,12 +20,12 @@ function httpsWorker(glx) {
     // (the ACME and http->https middleware are loaded by glx.httpServer)
     var httpServer = glx.httpServer();
 
-    httpServer.listen(currentConfig.httpport, "0.0.0.0", function() {
+    httpServer.listen(this.currentConfig.httpport, "0.0.0.0", function() {
         console.info("Listening on ", httpServer.address());
-        console.log("\r\nshare your pac url:  \r\n%s\r\n", 'https://'+ currentConfig.domain + currentConfig.paclink +"\r\n");
+        console.log("\r\nshare your pac url:  \r\n%s\r\n", 'https://'+ this.currentConfig.domain + this.currentConfig.paclink +"\r\n");
     });
 
 }
 
 exports.httpsWorker = httpsWorker;
-exports.currentConfig = currentConfig;
+exports.currentConfig = this.currentConfig;
