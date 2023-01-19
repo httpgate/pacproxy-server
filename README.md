@@ -18,7 +18,7 @@ pacproxy runs in a web server 在vps服务器上运行的pacproxy
 
 ## 运行
 
-### 初始化服务器，并修改网站设置模板
+### 初始化服务器，并修改网站设置
 
 ```
 git clone https://github.com/httpgate/pacproxy-server
