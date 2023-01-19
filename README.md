@@ -46,7 +46,7 @@ npx greenlock add --subject your.site.domain --altnames you.site.domain
 ### 第一次运行pacproxy服务：
 
 ```
-npm start
+./server.js
 ```
 确认运行正常后 Ctrl + C 退出
 
@@ -60,12 +60,12 @@ nano current.site.cfg
 ### 以后每次运行pacproxy服务：
 
 ```
-nohup npm start > pacproxy.log >2&1  & 
+nohup ./server.js > pacproxy.log & 
 ```
   加nohup 和 & 可以关闭ssh终端后还可以后台运行, 查看日志：
 
 ```
-cat pacproxy.log
+tail -f pacproxy.log
 ```
 
 ### 停止pacproxy服务并升级Github代码：
