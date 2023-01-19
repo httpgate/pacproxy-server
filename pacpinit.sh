@@ -5,5 +5,5 @@ sudo ufw allow https
 npm install
 npm update
 npx greenlock init --config-dir greenlock.d --maintainer-email "$1"
-cp ./example.site.domain ./current.site.cfg
+cp ./example.site.cfg ./current.site.cfg
 nano ./current.site.cfg
