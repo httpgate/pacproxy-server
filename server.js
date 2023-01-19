@@ -15,8 +15,8 @@ runServer();
 
 function runServer(currentConfig){
 	if(!process.argv[1].includes(__filename)) return;  //used as a module
-    if(!currentConfig) loadConfig();
-    if(!currentConfig) return;
+    if(!currentConfig) var loadSuccess = loadConfig();
+    if(!loadSuccess) return;
     app.currentConfig = currentConfig;
     startServer();
 }
