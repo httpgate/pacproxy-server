@@ -2,6 +2,10 @@
 const pacProxy = require('pacproxy-js');
 var currentConfig = false;
 
+function setConfig(config){
+    currentConfig = config;
+}
+
 function httpsWorker(glx) {
     pacProxy.load(currentConfig);
 
@@ -28,4 +32,4 @@ function httpsWorker(glx) {
 }
 
 exports.httpsWorker = httpsWorker;
-exports.currentConfig = currentConfig;
+exports.setConfig = setConfig;
