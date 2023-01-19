@@ -2,7 +2,7 @@
 
 pacproxy runs in a web server 在vps服务器上运行的pacproxy
 
-自动获取SSL数字证书，自动加载SSL数字证书
+自动获取SSL数字证书, 自动加载SSL数字证书, 多域名同时有效
 
 关于pacproxy参见[pacproxy.js](https://github.com/httpgate/pacproxy.js)
 
@@ -11,7 +11,7 @@ pacproxy runs in a web server 在vps服务器上运行的pacproxy
 
 需要能运行nodejs的服务器, 新手请选用Ubuntu服务器
 
-需要申请一个域名，并将域名指向服务器IP, 后文把你的域名叫作your.site.domain
+需要申请一个域名，并将域名指向服务器IP, 后文把你的域名叫作your.site.domain，下面的示范脚本里要替换回你的真实域名
 
 需要ssh到服务器的命令行，新手推荐用Bitvise SSH Client
 
@@ -26,19 +26,16 @@ git clone https://github.com/httpgate/pacproxy-server
 
 cd pacproxy-server
 
-./pacpinit.sh
-
-npx greenlock add --subject your.site.domain --your.site.domain
-
-nano default.site.cfg
-```
-
-  编辑默认网站设置并按Ctrl + O保存，Ctrl + X退出，它是以后新增网站的设置模板
-
-### 增加域名，如果域名被封锁可以增加新的域名：
+./pacpinit.sh your@email.address
 
 ```
-./pacpadd.sh your.site.domain
+
+  编辑默认网站设置并按Ctrl + O保存，Ctrl + X退出
+
+### 增加域名，如果域名被封锁可以增加新的域名, 旧域名也仍然有效：
+
+```
+npx greenlock add --subject your.site.domain --altnames you.site.domain
 
 ```
   编辑域名设置并按Ctrl + O保存，Ctrl + X退出
@@ -46,21 +43,21 @@ nano default.site.cfg
 ### 第一次运行pacproxy服务：
 
 ```
-npm start your.site.domain your@email.address
+npm start
 ```
 确认运行正常后 Ctrl + C 退出
 
-核对屏幕上显示出的PAC链接，如果不对则需要修改新产生的网站配置文件：
+核对屏幕上显示出的PAC链接，如果不对则需要修改网站配置文件：
 
 ```
-nano your.site.domain 
+nano current.site.cfg 
 ```
   编辑域名设置并按Ctrl + O保存，Ctrl + X退出
 
 ### 以后每次运行pacproxy服务：
 
 ```
-nohup npm start your.site.domain > pacproxy.log >2&1  & 
+nohup npm start > pacproxy.log >2&1  & 
 ```
   加nohup 和 & 可以关闭ssh终端后还可以后台运行, 查看日志：
 
@@ -76,3 +73,11 @@ kill -9 找到的pid
 git pull
 npm update
 ```
+
+### 如果中间哪一步做错可以保存下当前修改从头再来：
+
+```
+cd ..
+mv pacproxy-server pacproxy-serverbak
+```
+  然后就可以从第一步重新开始做
