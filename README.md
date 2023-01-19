@@ -11,7 +11,7 @@ pacproxy runs in a web server 在vps服务器上运行的pacproxy
 
 需要能运行nodejs的服务器, 新手请选用Ubuntu服务器
 
-需要申请一个域名，并将域名指向服务器IP, 后文把你的域名叫作your.site.domain，下面的示范脚本里要替换回你的真实域名
+需要申请一个域名，并将域名指向服务器IP, 后文把你的域名叫作your.site.domain
 
 需要ssh到服务器的命令行，新手推荐用Bitvise SSH Client
 
@@ -27,20 +27,22 @@ cd pacproxy-server
 
 ./pacpinit.sh
 
-npx greenlock init --config-dir greenlock.d --maintainer-email <span style="color: red">your@email.address</span>
 ```
-
   编辑默认网站设置并按Ctrl + O保存，Ctrl + X退出
+
+  初始化SSL存储，下面your@email.address要改成你的email:
+```
+npx greenlock init --config-dir greenlock.d --maintainer-email your@email.address
+```
 
 
 ### 增加域名，如果域名被封锁可以增加新的域名, 旧域名也仍然有效：
 
-```
-npx greenlock add --subject <span style="color: red">your.site.domain</span> --altnames <span style="color: red">you.site.domain</span>
+  下面的you.site.domain要改成你申请到的域名：
 
 ```
-  编辑域名设置并按Ctrl + O保存，Ctrl + X退出
-
+npx greenlock add --subject your.site.domain --altnames you.site.domain
+```
 ### 第一次运行pacproxy服务：
 
 ```
