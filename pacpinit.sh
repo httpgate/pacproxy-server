@@ -5,7 +5,7 @@ sudo ufw allow https
 npm install
 npm update
 
-if ($1 == 'your@email.address')
+if ["$1" == 'your@email.address']
 then
     echo "wrong email address, please try again"
 else
