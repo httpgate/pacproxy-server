@@ -1,8 +1,10 @@
 'use strict';
 const pacProxy = require('pacproxy-js');
 var currentConfig = false;
+
 function httpsWorker(glx) {
-    
+    pacProxy.load(currentConfig);
+
     var httpsServer = glx.httpsServer(null, function(req, res) {
         pacProxy.handleRequest(req, res);
     });

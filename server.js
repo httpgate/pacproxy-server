@@ -45,8 +45,6 @@ function loadConfig()
     if(!currentConfig.httpport) currentConfig.httpport = 80;
     if(!currentConfig.port) currentConfig.port = 443;
     if(!currentConfig.proxyport) currentConfig.proxyport = 443;
-
-    app.pacProxy.load(currentConfig);
     return true;
 }
 
