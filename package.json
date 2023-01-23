@@ -1,6 +1,6 @@
 {
   "name": "pacproxy-https-server",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "A pacproxy server runs in a web server",
   "main": "server.js",
   "scripts": {
