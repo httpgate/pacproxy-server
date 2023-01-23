@@ -29,7 +29,7 @@ function runServer(vConfig){
 
 function loadConfig()
 {
-    if(fs.existsSync('current.site.cfg')) currentConfig = require('./current.site.cfg');
+    if(fs.existsSync(process.cwd()+'/current.site.cfg')) currentConfig = require(process.cwd()+'/current.site.cfg');
     else {
         fs.copyFileSync('example.site.cfg', 'current.site.cfg');
         console.log("/r/n Please Modify your site config file /r/n");
@@ -41,7 +41,7 @@ function loadConfig()
     if(!currentConfig) return false;
  
     try {
-        let rawdata = fs.readFileSync('./greenlock.d/config.json');
+        let rawdata = fs.readFileSync(process.cwd()+'/greenlock.d/config.json');
         var config = JSON.parse(rawdata);
         accountEmail = config.defaults.subscriberEmail;
         console.log("maintainer: " + accountEmail + '\r\n');
@@ -76,7 +76,7 @@ function loadConfig()
 function startServer()
 {
     greenlock.init({
-            packageRoot: __dirname,
+            packageRoot: process.cwd(),
             configDir: "./greenlock.d",
             maintainerEmail: accountEmail,
             cluster: false,
@@ -102,8 +102,8 @@ function httpsWorker(glx) {
     //currentConfig.skiprequest = true;
     let keydir1 = './greenlock.d/live/' + currentConfig.domain + '/privkey.pem';
     let certdir1 = './greenlock.d/live/' + currentConfig.domain + '/fullchain.pem';
-    currentConfig.key  = path.resolve(__dirname, keydir1);
-    currentConfig.cert  = path.resolve(__dirname,certdir1 );
+    currentConfig.key  = path.resolve(process.cwd(), keydir1);
+    currentConfig.cert  = path.resolve(process.cwd(), certdir1);
 
     pacProxy.proxy(currentConfig);
 
@@ -194,10 +194,10 @@ function addsite(config,site){
 
     config.sites.push(site);
     try{
-        if(fs.existsSync('./greenlock.d/config.json')) fs.renameSync('./greenlock.d/config.json','./greenlock.d/config.json.bak'); 
+        if(fs.existsSync(process.cwd()+'/greenlock.d/config.json')) fs.renameSync(process.cwd()+'/greenlock.d/config.json',process.cwd()+'/greenlock.d/config.json.bak'); 
         var content = JSON.stringify(config);
-        if(!fs.existsSync('./greenlock.d')) fs.mkdirSync('./greenlock.d');
-        fs.writeFileSync('./greenlock.d/config.json', content);
+        if(!fs.existsSync(process.cwd()+'/greenlock.d')) fs.mkdirSync(process.cwd()+'/greenlock.d');
+        fs.writeFileSync(process.cwd()+'/greenlock.d/config.json', content);
 
         return true;
     } catch (e) {
