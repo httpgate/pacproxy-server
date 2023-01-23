@@ -100,14 +100,10 @@ function httpsWorker(glx) {
         pacProxy.handleRequest(req, res);
     });
 
-    //currentConfig.server = httpsServer;
-    //currentConfig.skiprequest = true;
     let keydir1 = './greenlock.d/live/' + currentConfig.domain + '/privkey.pem';
     let certdir1 = './greenlock.d/live/' + currentConfig.domain + '/fullchain.pem';
     currentConfig.key  = path.resolve(process.cwd(), keydir1);
     currentConfig.cert  = path.resolve(process.cwd(), certdir1);
-
-    pacProxy.proxy(currentConfig);
 
     // Note:
     // You must ALSO listen on port 80 for ACME HTTP-01 Challenges
@@ -117,6 +113,18 @@ function httpsWorker(glx) {
     httpServer.listen(currentConfig.httpport, "0.0.0.0", function() {
         console.info("\r\n Http Listening on ", httpServer.address());
     });
+
+
+    if(!fs.existsSync(currentConfig.key)){
+        httpsServer.listen(currentConfig.proxyport, "0.0.0.0", function() {
+            console.info("\r\n Http Listening on ", httpsServer.address());
+        });
+
+        currentConfig.server = httpsServer;
+        currentConfig.skiprequest = true;
+    }
+    pacProxy.proxy(currentConfig);
+
 }
 
 
