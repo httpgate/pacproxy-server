@@ -12,6 +12,7 @@ var currentConfig = false;
 var accountEmail = false;
 
 exports.runServer = runServer;
+exports.app = app;
 
 runServer();
 
