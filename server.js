@@ -39,7 +39,11 @@ function loadConfig()
     console.log("\r\ndomain config:");
     console.log(currentConfig);
     if(!currentConfig) return false;
- 
+}
+
+
+function startServer()
+{
     try {
         let rawdata = fs.readFileSync(process.cwd()+'/greenlock.d/config.json');
         var config = JSON.parse(rawdata);
@@ -49,34 +53,16 @@ function loadConfig()
         //console.log(e);
     }
 
-    if(accountEmail && process.argv[2] && (process.argv[2].toLowerCase()=='-s')) return true;
-
-    let dm = readline.question('Add a new domain?[no]: ');
-    if((!dm) || dm.toLowerCase()=='n' || dm.toLowerCase()=='no'){
-        if(accountEmail) return true;
-        else return false;
-    }
-    else if(!checkDomain(dm)) {
-        console.log('Wrong domain format错误的域名格式');
-        return false;
+    if(!accountEmail){
+        var config = getConfig(currentConfig.email);
+        var site = getSite(currentConfig.domain);
+        accountEmail = currentConfig.email;
+        addsite(config,site);
+    } else if( !hassite(config,currentConfig.domain)) {
+        var site = getSite(currentConfig.domain);
+        addsite(config,site);
     }
 
-    let site = getSite(dm);
-    if(accountEmail) return addsite(config, site);
-
-    accountEmail = readline.question('Please input manager email: ');
-    if(!checkEmail(accountEmail)) {
-        console.log('Wrong email format');
-        return false;
-    }
-
-    var config = getConfig(accountEmail);
-    return addsite(config,site);
-}
-
-
-function startServer()
-{
     greenlock.init({
             packageRoot: process.cwd(),
             configDir: "./greenlock.d",
@@ -145,6 +131,7 @@ function checkEmail(email) {
     return true;
 }
 
+
 function checkDomain(address) {
     if (!address) return false;
   
@@ -158,6 +145,7 @@ function checkDomain(address) {
 
     return true;
 }
+
 
 function getConfig(email){
     return {
@@ -180,6 +168,7 @@ function getConfig(email){
       };
 }
 
+
 function getSite(domain){
     return {
         "subject": domain,
@@ -190,18 +179,8 @@ function getSite(domain){
     };
 }
 
+
 function addsite(config,site){
-
-    let domainExists = false;
-    config.sites.forEach(element => {
-        if(element.subject==site.subject) {
-            console.warn('domain already exists 域名已经存在');
-            domainExists = true;
-        }
-    });
-
-    if(domainExists) return false;
-
     config.sites.push(site);
     try{
         if(fs.existsSync(process.cwd()+'/greenlock.d/config.json')) fs.renameSync(process.cwd()+'/greenlock.d/config.json',process.cwd()+'/greenlock.d/config.json.bak'); 
@@ -214,4 +193,15 @@ function addsite(config,site){
         console.log(e);
         return false;
     }
+}
+
+function hassite(config,domain){
+    let domainExists = false;
+    config.sites.forEach(element => {
+        if(element.subject==domain) {
+            console.warn('domain already exists 域名已经存在');
+            domainExists = true;
+        }
+    });
+    return domainExists;
 }
