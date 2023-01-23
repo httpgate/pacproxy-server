@@ -11,12 +11,13 @@ const readline = require('readline-sync');
 var currentConfig = false;
 var accountEmail = false;
 
-exports.startServer = startServer;
+exports.runServer = runServer;
+
 runServer();
 
 function runServer(vConfig){
-	if(!process.argv[1].includes(__filename)) return;  //used as a module
     if(!vConfig) {
+        if(!process.argv[1].includes(__filename)) return;  //used as a module
         if(loadConfig()) startServer();
     } else {
         currentConfig = vConfig
@@ -179,7 +180,7 @@ function getSite(domain){
 function addsite(config,site){
     config.sites.forEach(element => {
         if(element.subject==site.subject) {
-            config.warn('domain already exists 域名已经存在');
+            console.warn('domain already exists 域名已经存在');
             return false;
         }
     });
