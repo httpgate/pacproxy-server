@@ -49,7 +49,7 @@ function loadConfig()
         //console.log(e);
     }
 
-    let dm = readline.question('Add a new domain[no]? 增加新的域名?[no]: ');
+    let dm = readline.question('Add a new domain[no]?[no]: ');
     if((!dm) || dm.toLowerCase()=='n' || dm.toLowerCase()=='no'){
         if(accountEmail) return true;
         else return false;
@@ -62,9 +62,9 @@ function loadConfig()
     let site = getSite(dm);
     if(accountEmail) return addsite(config, site);
 
-    accountEmail = readline.question('Please input manager email请输入管理员email : ');
+    accountEmail = readline.question('Please input manager email: ');
     if(!checkEmail(accountEmail)) {
-        console.log('Wrong email format错误的email格式');
+        console.log('Wrong email format');
         return false;
     }
 
@@ -79,7 +79,8 @@ function startServer()
             packageRoot: __dirname,
             configDir: "./greenlock.d",
             maintainerEmail: accountEmail,
-            cluster: false
+            cluster: false,
+            packageAgent: 'pacproxy'
         })
         .ready(httpsWorker);
 }
