@@ -33,7 +33,7 @@ cd pacproxy-server
   编辑当前网站设置并按Ctrl + O保存，Ctrl + X退出
 
 
-### 第一次运行pacproxy服务：
+### 运行pacproxy服务：
 
 ```
 ./server.js
@@ -48,18 +48,6 @@ cd pacproxy-server
 nano current.site.cfg 
 ```
   编辑当前设置并按Ctrl + O保存，Ctrl + X退出
-
-### 以后每次运行pacproxy服务：
-
-```
-nohup ./server.js > pacproxy.log & 
-```  
-  
-  加nohup 和 & 可以关闭ssh终端后还可以后台运行, 查看日志：
-
-```
-tail -f pacproxy.log
-```
 
 ### 停止pacproxy服务并升级Github代码：
 
