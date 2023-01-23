@@ -30,24 +30,14 @@ cd pacproxy-server
 ```
   编辑当前网站设置并按Ctrl + O保存，Ctrl + X退出
 
-  初始化SSL存储，下面your@email.address要改成你的email:
-```
-npx greenlock init --config-dir greenlock.d --maintainer-email your@email.address
-```
 
-
-### 增加域名，如果域名被封锁可以增加新的域名, 旧域名也仍然有效：
-
-  下面的you.site.domain要改成你申请到的域名：
-
-```
-npx greenlock add --subject your.site.domain --altnames you.site.domain
-```
 ### 第一次运行pacproxy服务：
 
 ```
 ./server.js
 ```
+第一次运行需要根据屏幕提示输入一个域名和email
+
 确认运行正常后 Ctrl + C 退出
 
 核对屏幕上显示出的PAC链接，如果不对则需要修改网站配置文件：
@@ -62,6 +52,8 @@ nano current.site.cfg
 ```
 nohup ./server.js > pacproxy.log & 
 ```
+  每次运行都会提示是否增加新的域名，如果不增加则直接按回车跳过
+  
   加nohup 和 & 可以关闭ssh终端后还可以后台运行, 查看日志：
 
 ```
