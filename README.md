@@ -20,6 +20,8 @@ pacproxy runs in a web server 在vps服务器上运行的pacproxy
 
 ## 运行
 
+如果不是在有公网IP的服务器运行请下载编译好的服务器软件，适合各种操作系统，笔记本和台式机：https://github.com/httpgate/resouces/tree/main/pacproxy-server
+
 ### 初始化服务器，并修改网站设置
 
 ```
@@ -48,6 +50,15 @@ cd pacproxy-server
 nano current.site.cfg 
 ```
   编辑当前设置并按Ctrl + O保存，Ctrl + X退出
+
+
+### 后台运行pacproxy服务：
+
+```
+nohup ./server.js -s &
+```
+加-s防止出现对话框导致后台运行一直在等待输入状态
+
 
 ### 停止pacproxy服务并升级Github代码：
 
