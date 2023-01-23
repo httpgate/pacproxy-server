@@ -2,7 +2,9 @@
 
 pacproxy runs in a web server 在vps服务器上运行的pacproxy
 
-自动获取SSL数字证书, 自动加载SSL数字证书, 多域名同时有效
+自动获取SSL数字证书, 自动加载SSL数字证书
+
+支持多域名，能同时保存和获取多个域名数字证书，但只能启用其中一个域名的https加密
 
 关于pacproxy参见[pacproxy.js](https://github.com/httpgate/pacproxy.js)
 
@@ -51,8 +53,7 @@ nano current.site.cfg
 
 ```
 nohup ./server.js > pacproxy.log & 
-```
-  每次运行都会提示是否增加新的域名，如果不增加则直接按回车跳过
+```  
   
   加nohup 和 & 可以关闭ssh终端后还可以后台运行, 查看日志：
 

@@ -7,6 +7,7 @@ const fs = require('fs');
 const pacProxy = require('pacproxy-js');
 const app = require('./app.js');
 const readline = require('readline-sync');
+const path = require('path');
 
 var currentConfig = false;
 var accountEmail = false;
@@ -95,15 +96,15 @@ function httpsWorker(glx) {
     var httpsServer = glx.httpsServer(null, function(req, res) {
         pacProxy.handleRequest(req, res);
     });
-    currentConfig.server = httpsServer;
-    currentConfig.skiprequest = true;
-    pacProxy.proxy(currentConfig);
 
-    httpsServer.listen(currentConfig.port, "0.0.0.0", function() {
-        console.info("\r\n Https Listening on ", httpsServer.address());
-        console.warn("\r\n Share your pacproxy link:  ", pacProxy.getShareLink('http'));
-        console.warn("\r\n Share your wssproxy link:  ", pacProxy.getShareLink('ws'));
-    });
+    //currentConfig.server = httpsServer;
+    //currentConfig.skiprequest = true;
+    let keydir1 = './greenlock.d/live/' + currentConfig.domain + '/privkey.pem';
+    let certdir1 = './greenlock.d/live/' + currentConfig.domain + '/fullchain.pem';
+    currentConfig.key  = path.resolve(__dirname, keydir1);
+    currentConfig.cert  = path.resolve(__dirname,certdir1 );
+
+    pacProxy.proxy(currentConfig);
 
     // Note:
     // You must ALSO listen on port 80 for ACME HTTP-01 Challenges
