@@ -49,7 +49,9 @@ function loadConfig()
         //console.log(e);
     }
 
-    let dm = readline.question('Add a new domain[no]?[no]: ');
+    if(accountEmail && process.argv[2] && (process.argv[2].toLowerCase()=='-s')) return true;
+
+    let dm = readline.question('Add a new domain?[no]: ');
     if((!dm) || dm.toLowerCase()=='n' || dm.toLowerCase()=='no'){
         if(accountEmail) return true;
         else return false;
