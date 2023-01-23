@@ -178,18 +178,21 @@ function getSite(domain){
 }
 
 function addsite(config,site){
+
+    let domainExists = false;
     config.sites.forEach(element => {
         if(element.subject==site.subject) {
             console.warn('domain already exists 域名已经存在');
-            return false;
+            domainExists = true;
         }
     });
+
+    if(domainExists) return false;
 
     config.sites.push(site);
     try{
         if(fs.existsSync('./greenlock.d/config.json')) fs.renameSync('./greenlock.d/config.json','./greenlock.d/config.json.bak'); 
         var content = JSON.stringify(config);
-        console.log('\r\nadd new config'+ content);
         if(!fs.existsSync('./greenlock.d')) fs.mkdirSync('./greenlock.d');
         fs.writeFileSync('./greenlock.d/config.json', content);
 
