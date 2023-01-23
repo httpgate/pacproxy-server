@@ -6,6 +6,7 @@ const greenlock = require('greenlock-express');
 const fs = require('fs');
 const pacProxy = require('pacproxy-js');
 const app = require('./app.js');
+const readline = require('readline-sync');
 
 var currentConfig = false;
 var accountEmail = false;
@@ -36,13 +37,36 @@ function loadConfig()
     console.log(currentConfig);
     if(!currentConfig) return false;
  
-    let rawdata = fs.readFileSync('./greenlock.d/config.json');
-    let config = JSON.parse(rawdata);
-    accountEmail = config.defaults.subscriberEmail;
-    console.log("maintainer: " + accountEmail + '\r\n');
-    if(!accountEmail) return false;
+    try {
+        let rawdata = fs.readFileSync('./greenlock.d/config.json');
+        var config = JSON.parse(rawdata);
+        accountEmail = config.defaults.subscriberEmail;
+        console.log("maintainer: " + accountEmail + '\r\n');
+    } catch(e) {
+        //console.log(e);
+    }
 
-    return true;
+    let dm = readline.question('Add a new domain[no]? 增加新的域名?[no]: ');
+    if((!dm) || dm.toLowerCase()=='n' || dm.toLowerCase()=='no'){
+        if(accountEmail) return true;
+        else return false;
+    }
+    else if(!checkDomain(dm)) {
+        console.log('Wrong domain format错误的域名格式');
+        return false;
+    }
+
+    let site = getSite(dm);
+    if(accountEmail) return addsite(config, site);
+
+    accountEmail = readline.question('Please input manager email请输入管理员email : ');
+    if(!checkEmail(accountEmail)) {
+        console.log('Wrong email format错误的email格式');
+        return false;
+    }
+
+    var config = getConfig(accountEmail);
+    return addsite(config,site);
 }
 
 
@@ -57,9 +81,7 @@ function startServer()
         .ready(httpsWorker);
 }
 
-
 function httpsWorker(glx) {
-
     if(!currentConfig.https) currentConfig.https = true;
     if(!currentConfig.httpport) currentConfig.httpport = 80;
     if(!currentConfig.port) currentConfig.port = 443;
@@ -76,9 +98,9 @@ function httpsWorker(glx) {
     pacProxy.proxy(currentConfig);
 
     httpsServer.listen(currentConfig.port, "0.0.0.0", function() {
-        console.info("/r/n Https Listening on ", httpsServer.address());
-        console.info("/r/n Share your pacproxy link:  ", pacProxy.getShareLink('http'));
-        console.info("/r/n Share your wssproxy link:  ", pacProxy.getShareLink('ws'));
+        console.info("\r\n Https Listening on ", httpsServer.address());
+        console.warn("\r\n Share your pacproxy link:  ", pacProxy.getShareLink('http'));
+        console.warn("\r\n Share your wssproxy link:  ", pacProxy.getShareLink('ws'));
     });
 
     // Note:
@@ -87,8 +109,92 @@ function httpsWorker(glx) {
     var httpServer = glx.httpServer();
 
     httpServer.listen(currentConfig.httpport, "0.0.0.0", function() {
-        console.info("/r/n Http Listening on ", httpServer.address());
+        console.info("\r\n Http Listening on ", httpServer.address());
     });
-
 }
 
+
+function checkEmail(email) {
+    if (!email) return false;
+  
+    var emailParts = email.split('@');
+  
+    if(emailParts.length !== 2) return false;
+  
+    var account = emailParts[0];
+    var address = emailParts[1];
+  
+    if(account.length > 64) return false;
+  
+    if(!checkDomain(address)) return false;
+  
+    return true;
+}
+
+function checkDomain(address) {
+    if (!address) return false;
+  
+    else if(address.length > 255) return false
+  
+    var domainParts = address.split('.');
+    if(domainParts.length<2) return false;
+    if (domainParts.some(function (part) {
+      return part.length > 63;
+    })) return false;
+
+    return true;
+}
+
+function getConfig(email){
+    return {
+        "defaults": {
+          "store": {
+            "module": "greenlock-store-fs"
+          },
+          "challenges": {
+            "http-01": {
+              "module": "acme-http-01-standalone"
+            }
+          },
+          "renewOffset": "-45d",
+          "renewStagger": "3d",
+          "accountKeyType": "EC-P256",
+          "serverKeyType": "RSA-2048",
+          "subscriberEmail": email
+        },
+        "sites": []
+      };
+}
+
+function getSite(domain){
+    return {
+        "subject": domain,
+        "altnames": [
+            domain
+        ],
+        "renewAt": 1
+    };
+}
+
+function addsite(config,site){
+    config.sites.forEach(element => {
+        if(element.subject==site.subject) {
+            config.warn('domain already exists 域名已经存在');
+            return false;
+        }
+    });
+
+    config.sites.push(site);
+    try{
+        if(fs.existsSync('./greenlock.d/config.json')) fs.renameSync('./greenlock.d/config.json','./greenlock.d/config.json.bak'); 
+        var content = JSON.stringify(config);
+        console.log('\r\nadd new config'+ content);
+        if(!fs.existsSync('./greenlock.d')) fs.mkdirSync('./greenlock.d');
+        fs.writeFileSync('./greenlock.d/config.json', content);
+
+        return true;
+    } catch (e) {
+        console.log(e);
+        return false;
+    }
+}
