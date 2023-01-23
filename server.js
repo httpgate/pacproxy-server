@@ -39,6 +39,7 @@ function loadConfig()
     console.log("\r\ndomain config:");
     console.log(currentConfig);
     if(!currentConfig) return false;
+    return true;
 }
 
 
@@ -72,6 +73,7 @@ function startServer()
         })
         .ready(httpsWorker);
 }
+
 
 function httpsWorker(glx) {
     if(!currentConfig.https) currentConfig.https = true;
@@ -111,39 +113,6 @@ function httpsWorker(glx) {
     }
     pacProxy.proxy(currentConfig);
 
-}
-
-
-function checkEmail(email) {
-    if (!email) return false;
-  
-    var emailParts = email.split('@');
-  
-    if(emailParts.length !== 2) return false;
-  
-    var account = emailParts[0];
-    var address = emailParts[1];
-  
-    if(account.length > 64) return false;
-  
-    if(!checkDomain(address)) return false;
-  
-    return true;
-}
-
-
-function checkDomain(address) {
-    if (!address) return false;
-  
-    else if(address.length > 255) return false
-  
-    var domainParts = address.split('.');
-    if(domainParts.length<2) return false;
-    if (domainParts.some(function (part) {
-      return part.length > 63;
-    })) return false;
-
-    return true;
 }
 
 
@@ -205,3 +174,37 @@ function hassite(config,domain){
     });
     return domainExists;
 }
+
+
+function checkEmail(email) {
+    if (!email) return false;
+  
+    var emailParts = email.split('@');
+  
+    if(emailParts.length !== 2) return false;
+  
+    var account = emailParts[0];
+    var address = emailParts[1];
+  
+    if(account.length > 64) return false;
+  
+    if(!checkDomain(address)) return false;
+  
+    return true;
+}
+
+
+function checkDomain(address) {
+    if (!address) return false;
+  
+    else if(address.length > 255) return false
+  
+    var domainParts = address.split('.');
+    if(domainParts.length<2) return false;
+    if (domainParts.some(function (part) {
+      return part.length > 63;
+    })) return false;
+
+    return true;
+}
+
