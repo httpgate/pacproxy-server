@@ -55,11 +55,14 @@ function startServer()
     }
 
     if(!accountEmail){
+        if(!checkEmail(currentConfig.email)) return console.log('\r\ninvalid email format');
+        if(!checkDomain(currentConfig.domain)) return console.log('\r\ninvalid domain format');
         var config = getConfig(currentConfig.email);
         var site = getSite(currentConfig.domain);
         accountEmail = currentConfig.email;
         addsite(config,site);
     } else if( !hassite(config,currentConfig.domain)) {
+        if(!checkDomain(currentConfig.domain)) return console.log('\r\ninvalid domain format');
         var site = getSite(currentConfig.domain);
         addsite(config,site);
     }
