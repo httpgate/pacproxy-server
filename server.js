@@ -31,12 +31,11 @@ function loadConfig()
 {
     if(fs.existsSync(process.cwd()+'/current.site.cfg')) currentConfig = require(process.cwd()+'/current.site.cfg');
     else {
-        fs.copyFileSync('example.site.cfg', 'current.site.cfg');
-        console.log("/r/n Please Modify your site config file /r/n");
+        fs.copyFileSync(__dirname + '/example.site.cfg', process.cwd()+'current.site.cfg');
+        readline.question("\r\nPlease Modify your site config file: current.site.cfg [ok]");
         return false;
     }
-
-    console.log("\r\ndomain config:");
+    console.log("\r\ndomain config:\r\n");
     console.log(currentConfig);
     if(!currentConfig) return false;
     return true;
@@ -55,14 +54,14 @@ function startServer()
     }
 
     if(!accountEmail){
-        if(!checkEmail(currentConfig.email)) return console.log('\r\ninvalid email format');
-        if(!checkDomain(currentConfig.domain)) return console.log('\r\ninvalid domain format');
+        if(!checkEmail(currentConfig.email)) return readline.question('\r\ninvalid email format [ok]');
+        if(!checkDomain(currentConfig.domain)) return readline.question('\r\ninvalid domain format [ok]');
         var config = getConfig(currentConfig.email);
         var site = getSite(currentConfig.domain);
         accountEmail = currentConfig.email;
         addsite(config,site);
     } else if( !hassite(config,currentConfig.domain)) {
-        if(!checkDomain(currentConfig.domain)) return console.log('\r\ninvalid domain format');
+        if(!checkDomain(currentConfig.domain)) return readline.question('\r\ninvalid domain format [ok]');
         var site = getSite(currentConfig.domain);
         addsite(config,site);
     }
@@ -107,12 +106,13 @@ function httpsWorker(glx) {
 
     if(!fs.existsSync(currentConfig.key)){
         httpsServer.listen(currentConfig.port, "0.0.0.0", function() {
-            console.info("\r\n Http Listening on ", httpsServer.address());
+            console.info("\r\n Https Listening on ", httpsServer.address());
         });
 
         currentConfig.server = httpsServer;
         currentConfig.skiprequest = true;
     }
+
     pacProxy.proxy(currentConfig);
 
 }
