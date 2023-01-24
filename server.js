@@ -31,7 +31,7 @@ function loadConfig()
 {
     if(fs.existsSync(process.cwd()+'/current.site.cfg')) currentConfig = require(process.cwd()+'/current.site.cfg');
     else {
-        fs.copyFileSync(__dirname + '/example.site.cfg', process.cwd()+'current.site.cfg');
+        fs.copyFileSync(__dirname + '/example.site.cfg', process.cwd()+'/current.site.cfg');
         readline.question("\r\nPlease Modify your site config file: current.site.cfg [ok]");
         return false;
     }
