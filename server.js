@@ -77,11 +77,11 @@ function startServer()
 }
 
 function httpsWorker(glx) {
-    if(! 'https' in currentConfig) currentConfig.https = true;
+    if(! ('https' in currentConfig)) currentConfig.https = true;
     if(!currentConfig.httpport) currentConfig.httpport = 80;
     if(!currentConfig.port) currentConfig.port = 443;
     if(!currentConfig.proxyport) currentConfig.proxyport = 443;
-    if(!'websocket' in currentConfig) currentConfig.websocket = true;
+    if(! ('websocket' in currentConfig)) currentConfig.websocket = true;
     currentConfig.onrequest = app.onrequest;
     currentConfig.onconnection = app.onconnection;
 
