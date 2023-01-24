@@ -157,7 +157,7 @@ function addsite(config,site){
         if(fs.existsSync(process.cwd()+'/greenlock.d/config.json')) fs.renameSync(process.cwd()+'/greenlock.d/config.json',process.cwd()+'/greenlock.d/config.json.bak'); 
         var content = JSON.stringify(config);
         if(!fs.existsSync(process.cwd()+'/greenlock.d')) fs.mkdirSync(process.cwd()+'/greenlock.d');
-        fs.writeFileSync(process.cwd()+'/greenlock.d/config.json', content);
+        fs.writeFileSync(process.cwd()+'/greenlock.d/config.json', content, 'utf-8');
 
         return true;
     } catch (e) {
