@@ -104,7 +104,7 @@ function httpsWorker(glx) {
     });
 
 
-    if(!fs.existsSync(currentConfig.key)){
+    if(currentConfig.https && !fs.existsSync(currentConfig.key)){
         httpsServer.listen(currentConfig.port, "0.0.0.0", function() {
             console.info("\r\n Https Listening on ", httpsServer.address());
         });
