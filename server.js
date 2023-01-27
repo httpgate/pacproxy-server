@@ -14,7 +14,6 @@ var accountEmail = false;
 
 exports.runServer = runServer;
 exports.app = app;
-
 runServer();
 
 function runServer(vConfig){
@@ -82,8 +81,8 @@ function httpsWorker(glx) {
     if(!currentConfig.port) currentConfig.port = 443;
     if(!currentConfig.proxyport) currentConfig.proxyport = 443;
     if(! ('websocket' in currentConfig)) currentConfig.websocket = true;
-    currentConfig.onrequest = app.onrequest;
-    currentConfig.onconnection = app.onconnection;
+    if(currentConfig.onrequest) currentConfig.onrequest = app.onrequest;
+    if(currentConfig.onconnection) currentConfig.onconnection = app.onconnection;
 
     var httpsServer = glx.httpsServer(null, function(req, res) {
         pacProxy.handleRequest(req, res);
@@ -99,12 +98,11 @@ function httpsWorker(glx) {
     // (the ACME and http->https middleware are loaded by glx.httpServer)
     var httpServer = glx.httpServer();
 
-    httpServer.listen(currentConfig.httpport, "0.0.0.0", function() {
-        console.info("\r\n Http Listening on ", httpServer.address());
-    });
-
-
     if(currentConfig.https && !fs.existsSync(currentConfig.key)){
+        httpServer.listen(currentConfig.httpport, "0.0.0.0", function() {
+            console.info("\r\n Http Listening on ", httpServer.address());
+        });
+    
         httpsServer.listen(currentConfig.port, "0.0.0.0", function() {
             console.info("\r\n Https Listening on ", httpsServer.address());
         });
