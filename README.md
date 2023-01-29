@@ -64,9 +64,19 @@ tail -f nohup.out
 ```
 ps -ef | grep node
 kill -9 找到的pid
+
+git checkout package.json
 git pull
 npm update
 ```
+
+### 更新域名数字证书
+
+```
+./server.js forcert
+```
+如果数字证书过期，则需要按前面的方法停止pacproxy服务，再用上述命令启动服务，访问网站更新数字证书后再重启服务
+
 
 ### 如果中间做错可以删掉从头再来：
 

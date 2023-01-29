@@ -37,6 +37,9 @@ function loadConfig()
     console.log("\r\ndomain config:\r\n");
     console.log(currentConfig);
     if(!currentConfig) return false;
+
+    if(process.argv[2] && (process.argv[2].toLowerCase()=='forcert')) currentConfig.forcert = true;
+
     return true;
 }
 
