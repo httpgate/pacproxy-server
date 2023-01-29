@@ -101,7 +101,8 @@ function httpsWorker(glx) {
     // (the ACME and http->https middleware are loaded by glx.httpServer)
     var httpServer = glx.httpServer();
 
-    if(currentConfig.https && !fs.existsSync(currentConfig.key)){
+    if(!currentConfig.https){}
+    else if ((currentConfig.forcert) || (!fs.existsSync(currentConfig.key))){
         httpServer.listen(currentConfig.httpport, "0.0.0.0", function() {
             console.info("\r\n Http Listening on ", httpServer.address());
         });
