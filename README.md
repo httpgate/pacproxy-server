@@ -1,6 +1,6 @@
 # pacproxy-server
 
-pacproxy runs in a web server 在vps服务器上运行的pacproxy
+pacproxy runs in a web server 在vps服务器上运行的pacproxy加密代理
 
 自动获取SSL数字证书, 自动加载SSL数字证书
 
@@ -13,7 +13,7 @@ pacproxy runs in a web server 在vps服务器上运行的pacproxy
 
 需要能运行nodejs的服务器, 新手请选用Ubuntu服务器
 
-需要[申请一个域名](https://github.com/httpgate/pacproxy.js/blob/main/documents/About_Domain_ZH.md)，并将域名指向服务器IP, 后文把你的域名叫作your.site.domain
+需要[申请一个域名](https://github.com/httpgate/pacproxy.js/blob/main/documents/About_Domain_ZH.md)，并将域名指向服务器IP
 
 需要ssh到服务器的命令行，新手推荐用Bitvise SSH Client
 
