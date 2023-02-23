@@ -3,6 +3,7 @@
   "version": "1.2.8",
   "description": "A pacproxy server runs in a web server",
   "main": "server.js",
+  "bin": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
