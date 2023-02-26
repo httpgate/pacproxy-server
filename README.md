@@ -85,3 +85,12 @@ cd ..
 rm -rf ./pacproxy-server
 ```
   然后就可以从第一步重新开始做
+
+
+## 推荐
+
+推荐用prcproxy安全的访问以下网站：
+* 明慧网：https://www.minghui.org
+* 干净世界：https://www.ganjing.com
+* 神韵作品: https://shenyunzuopin.com
+* 大法经书: https://www.falundafa.org
