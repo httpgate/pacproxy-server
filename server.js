@@ -8,6 +8,8 @@ const pacProxy = require('pacproxy-js');
 const app = require('./app.js');
 const readline = require('readline-sync');
 const path = require('path');
+const dns = require('dns');
+const CacheableLookup = require('cacheable-lookup');
 
 var currentConfig = false;
 var accountEmail = false;
@@ -114,6 +116,10 @@ function httpsWorker(glx) {
         currentConfig.server = httpsServer;
         currentConfig.skiprequest = true;
     }
+
+    const vlookup = dns.lookup;
+    const cacheable = new CacheableLookup({lookup: vlookup});
+    dns.lookup = cacheable.lookup;
 
     pacProxy.proxy(currentConfig);
 
