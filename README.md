@@ -53,7 +53,9 @@ nano current.site.cfg
 ```
 nohup ./server.js &
 ```
-防止关闭ssh连接后服务中止, 查看日志：
+加nohup防止关闭ssh连接后服务中止, (如nohup有问题可以改用screen)
+
+ 查看日志：
 
 ```
 tail -f nohup.out
