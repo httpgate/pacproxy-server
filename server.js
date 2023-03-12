@@ -16,11 +16,11 @@ var accountEmail = false;
 
 exports.runServer = runServer;
 exports.app = app;
-runServer();
+
+if(process.argv[1].includes(__filename)) runServer();
 
 function runServer(vConfig){
     if(!vConfig) {
-        if(!process.argv[1].includes(__filename)) return;  //used as a module
         if(loadConfig()) startServer();
     } else {
         currentConfig = vConfig

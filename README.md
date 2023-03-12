@@ -53,20 +53,37 @@ nano current.site.cfg
 ```
 nohup ./server.js &
 ```
-加nohup防止关闭ssh连接后服务中止, (如nohup有问题可以改用screen)
+加nohup防止关闭ssh连接后服务中止
 
  查看日志：
 
 ```
 tail -f nohup.out
 ```
+新版本也支持pm2:
 
-### 停止pacproxy服务并升级Github代码：
+```
+pm2 start runserver.js
+```
+
+### 停止pacproxy服务
+
+如果用nohup命令后台运行:
 
 ```
 ps -ef | grep node
 kill -9 找到的pid
+```
+如果用pm2命令后台运行:
 
+```
+pm2 delete runserver
+```
+
+
+### 升级Github代码：
+
+```
 git checkout package.json
 git pull
 npm update
