@@ -63,6 +63,7 @@ tail -f nohup.out
 新版本也支持pm2:
 
 ```
+npm install -g pm2@latest
 pm2 start runserver.js
 ```
 
