@@ -55,7 +55,7 @@ nohup ./server.js &
 ```
 加nohup防止关闭ssh连接后服务中止
 
- 查看日志：
+查看日志：
 
 ```
 tail -f nohup.out
@@ -65,6 +65,11 @@ tail -f nohup.out
 ```
 npm install -g pm2@latest
 pm2 start runserver.js
+```
+查看日志：
+
+```
+pm2 logs
 ```
 
 ### 停止pacproxy服务
