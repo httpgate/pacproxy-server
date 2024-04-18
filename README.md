@@ -11,7 +11,7 @@ pacproxy runs in a web server 在vps服务器上运行的pacproxy加密代理
 
 ## 准备
 
-需要能运行nodejs的服务器, 新手请选用Ubuntu服务器
+需要能运行nodejs的服务器, 新手请选用Debian服务器
 
 需要[申请一个域名](https://github.com/httpgate/pacproxy.js/blob/main/documents/About_Domain_ZH.md)，并将域名指向服务器IP
 

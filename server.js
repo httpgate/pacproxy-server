@@ -86,6 +86,8 @@ function httpsWorker(glx) {
     if(!currentConfig.port) currentConfig.port = 443;
     if(!currentConfig.proxyport) currentConfig.proxyport = 443;
     if(! ('websocket' in currentConfig)) currentConfig.websocket = true;
+    if(! ('behindTunnel' in currentConfig)) currentConfig.behindTunnel = true;
+
     if(currentConfig.onrequest) currentConfig.onrequest = app.onrequest;
     if(currentConfig.onconnection) currentConfig.onconnection = app.onconnection;
 
