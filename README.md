@@ -11,7 +11,7 @@ pacproxy runs in a web server 在vps服务器上运行的pacproxy加密代理
 
 ## 准备
 
-需要能运行nodejs的服务器, 新手请选用Debian服务器
+需要能运行nodejs的服务器, 新手建议选用Debian服务器
 
 需要[申请一个域名](https://github.com/httpgate/pacproxy.js/blob/main/documents/About_Domain_ZH.md)，并将域名指向服务器IP
 
@@ -38,7 +38,7 @@ cd pacproxy-server
 ### 运行pacproxy服务：
 
 ```
-./server.js
+sudo ./server.js
 ```
 核对屏幕上显示出的PAC链接，如果不对则需要修改网站配置文件：
 
@@ -51,7 +51,7 @@ nano current.site.cfg
 ### 后台运行pacproxy服务：
 
 ```
-nohup ./server.js &
+sudo nohup ./server.js &
 ```
 加nohup防止关闭ssh连接后服务中止
 
@@ -63,18 +63,18 @@ tail -f nohup.out
 新版本也支持pm2:
 
 ```
-npm install -g pm2@latest
-pm2 start runserver.js
+sudo npm install -g pm2@latest
+sudo pm2 start runserver.js
 ```
 用pm2每天下午6点重启服务以避免内存泄漏导致的网速变慢：
 
 ```
-pm2 restart runserver --cron-restart="0 18 * * *"
+sudo pm2 restart runserver --cron-restart="0 18 * * *"
 ```
 查看日志：
 
 ```
-pm2 logs
+sudo pm2 logs
 ```
 
 ### 停止pacproxy服务
@@ -88,7 +88,7 @@ kill -9 找到的pid
 如果用pm2命令后台运行:
 
 ```
-pm2 delete runserver
+sudo pm2 delete runserver
 ```
 
 
@@ -103,7 +103,7 @@ npm update
 ### 更新域名数字证书
 
 ```
-./server.js forcert
+sudo ./server.js forcert
 ```
 如果数字证书过期，则需要按前面的方法停止pacproxy服务，再用上述命令启动服务，访问网站更新数字证书后再重启服务
 
