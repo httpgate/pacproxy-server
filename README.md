@@ -66,10 +66,10 @@ tail -f nohup.out
 sudo npm install -g pm2@latest
 sudo pm2 start runserver.js
 ```
-用pm2每天下午6点重启服务以避免内存泄漏导致的网速变慢：
+用pm2每天下午13点45分(举例)重启服务以避免内存泄漏导致的网速变慢：
 
 ```
-sudo pm2 restart runserver --cron-restart="0 18 * * *"
+sudo pm2 restart runserver --cron-restart="45 13 * * *"
 ```
 查看日志：
 
