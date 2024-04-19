@@ -99,13 +99,14 @@ git checkout package.json
 git pull
 npm update
 ```
+### 更新数字证书
 
-### 更新域名数字证书，免费数字证书现在有效期缩短为3个月，建议每2个月更新一次数字证书
+免费数字证书现在有效期缩短为3个月，建议每2个月更新一次数字证书
 
 ```
-sudo ./server.js forcert
+sudo ./server-linux forcert
 ```
-加forcert参数运行服务后，从浏览器访问服务器的pacurl会更新数字证书，再按Ctrl+C结束服务后以正常模式重启
+加forcert参数运行服务后，从浏览器访问pacurl会更新数字证书，再以正常模式重启服务：
 
 ```
 sudo nohup ./server-linux &
