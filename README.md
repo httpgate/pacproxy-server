@@ -118,7 +118,6 @@ sudo nohup ./server-linux &
 cd ..
 rm -rf ./pacproxy-server
 ```
-  然后就可以从第一步重新开始做
 
 
 ## 推荐
