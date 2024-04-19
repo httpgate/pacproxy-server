@@ -4,23 +4,21 @@ pacproxy runs in a web server 在vps服务器上运行的pacproxy加密代理
 
 自动获取SSL数字证书, 自动加载SSL数字证书
 
-支持多域名，能同时保存和获取多个域名数字证书，但只能启用其中一个域名的https加密
-
 关于pacproxy参见[pacproxy.js](https://github.com/httpgate/pacproxy.js)
 
 
 ## 准备
 
-需要能运行nodejs的服务器, 新手建议选用Debian服务器
+需要能运行nodejs的服务器, 建议选用Debian服务器
 
 需要[申请一个域名](https://github.com/httpgate/pacproxy.js/blob/main/documents/About_Domain_ZH.md)，并将域名指向服务器IP
 
-需要ssh到服务器的命令行，新手推荐用Bitvise SSH Client
+需要ssh到服务器的命令行，推荐用Bitvise SSH Client
 
 
 ## 运行
 
-新手建议运行编译好的服务器软件，适合各种操作系统，笔记本和台式机：https://github.com/httpgate/resouces/tree/main/pacproxy-server
+可运行编译好的服务器软件，适合各种操作系统，笔记本和台式机：https://github.com/httpgate/resouces/tree/main/pacproxy-server
 
 ### 初始化服务器，并修改网站设置
 
@@ -66,7 +64,7 @@ tail -f nohup.out
 sudo npm install -g pm2@latest
 sudo pm2 start runserver.js
 ```
-用pm2每天下午13点45分(举例)重启服务以避免内存泄漏导致的网速变慢：
+可用pm2每天下午13点45分(举例)重启服务，清理内存：
 
 ```
 sudo pm2 restart runserver --cron-restart="45 13 * * *"
