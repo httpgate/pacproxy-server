@@ -121,48 +121,43 @@ function httpsWorker(vglx) {
     httpServer = glx.httpServer();
 
     httpServer.listen(currentConfig.httpport, "0.0.0.0", () => {
-        console.info("\r\n Http SSL Cert Server Listening on ", httpServer.address());
+        //console.info("\r\n Http SSL Cert Server Listening on ", httpServer.address());
     });
 
     httpsServer.listen(0, "127.0.0.1", () => {
-        
-        console.info("\r\n Https SSL Cert Server Listening on ", httpsServer.address());
-
+        //console.info("\r\n Https SSL Cert Server Listening on ", httpsServer.address());
         requestSSLCert();
-        setTimeout(endCertRequest, 10000);
     });
 
 }
 
-function endCertRequest( fromRequest = false ) {
+function endCertRequest() {
     if (!fs.existsSync(currentConfig.key))
-        return setTimeout(endCertRequest, 10000);
+        readline.question("\r\nFailed to obtain SSL certificate [ok]");
     else if(currentConfig.skipServer)    pacProxy.startServer();
-    else if(!fromRequest) return;
 
     currentConfig.skipServer = false;
 
-    httpServer.close(() => console.log("\r\n Http SSL Cert Server Closed."))
-    httpsServer.close(() => console.log("\r\n Https SSL Cert Server Closed."))
+    httpServer.close()
+    httpsServer.close()
     
 }
 
 function requestSSLCert() {
 
-    let url = 'https://' + currentConfig.domain+ currentConfig.paclink ;
-    let options = new URL(url);
-    options.port = httpsServer.address().port;
-
-    options.lookup = (hostname, opts, cb) => {
-      return cb(null, [{"address":'127.0.0.1', "family":4}]);
+    let clookup = (hostname, opts, cb) => {
+      cb(null, '127.0.0.1', 4);
     };
     
-    const req = https.request(options, (res) => {
-        console.log('statusCode:', res.statusCode);
-        console.log('headers:', res.headers);
+    const req = https.get({
+        hostname: currentConfig.domain,
+        path: currentConfig.paclink,
+        port: httpsServer.address().port,
+        lookup: clookup},  (res) => {
       
         endCertRequest(true);
 
+        res.on("close", (d)=>req.socket.end() );
     });
     
     req.on('error', (e) => {
