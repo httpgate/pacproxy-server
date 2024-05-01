@@ -10,9 +10,13 @@ const readline = require('readline-sync');
 const path = require('path');
 const dns = require('dns');
 const CacheableLookup = require('cacheable-lookup');
+const https = require('https');
 
 var currentConfig = false;
 var accountEmail = false;
+var glx = false;
+var httpServer = false;
+var httpsServer = false;
 
 exports.runServer = runServer;
 exports.app = app;
@@ -70,17 +74,6 @@ function startServer()
         addsite(config,site);
     }
 
-    greenlock.init({
-            packageRoot: process.cwd(),
-            configDir: "./greenlock.d",
-            maintainerEmail: accountEmail,
-            cluster: false,
-            packageAgent: 'pacproxy'
-        })
-        .ready(httpsWorker);
-}
-
-function httpsWorker(glx) {
     if(! ('https' in currentConfig)) currentConfig.https = true;
     if(!currentConfig.httpport) currentConfig.httpport = 80;
     if(!currentConfig.port) currentConfig.port = 443;
@@ -91,39 +84,90 @@ function httpsWorker(glx) {
     if(currentConfig.onrequest) currentConfig.onrequest = app.onrequest;
     if(currentConfig.onconnection) currentConfig.onconnection = app.onconnection;
 
-    var httpsServer = glx.httpsServer(null, function(req, res) {
-        pacProxy.handleRequest(req, res);
-    });
+    const vlookup = dns.lookup;
+    const cacheable = new CacheableLookup({lookup: vlookup});
+    dns.lookup = cacheable.lookup;
 
     let keydir1 = './greenlock.d/live/' + currentConfig.domain + '/privkey.pem';
     let certdir1 = './greenlock.d/live/' + currentConfig.domain + '/fullchain.pem';
     currentConfig.key  = path.resolve(process.cwd(), keydir1);
     currentConfig.cert  = path.resolve(process.cwd(), certdir1);
 
+    if ((currentConfig.forcert) || (!fs.existsSync(currentConfig.key)))
+        currentConfig.skipServer = true;
+
+    pacProxy.proxy(currentConfig);
+
+    greenlock.init({
+            packageRoot: process.cwd(),
+            configDir: "./greenlock.d",
+            maintainerEmail: accountEmail,
+            cluster: false,
+            packageAgent: 'pacproxy'
+        })
+        .ready(httpsWorker);
+}
+
+function httpsWorker(vglx) {
+    if(vglx) glx = vglx;
+
+    httpsServer = glx.httpsServer(null, function(req, res) {
+        pacProxy.handleRequest(req, res);
+    });
+
     // Note:
     // You must ALSO listen on port 80 for ACME HTTP-01 Challenges
     // (the ACME and http->https middleware are loaded by glx.httpServer)
-    var httpServer = glx.httpServer();
+    httpServer = glx.httpServer();
 
-    if(!currentConfig.https){}
-    else if ((currentConfig.forcert) || (!fs.existsSync(currentConfig.key))){
-        httpServer.listen(currentConfig.httpport, "0.0.0.0", function() {
-            console.info("\r\n Http Listening on ", httpServer.address());
-        });
+    httpServer.listen(currentConfig.httpport, "0.0.0.0", () => {
+        console.info("\r\n Http SSL Cert Server Listening on ", httpServer.address());
+    });
+
+    httpsServer.listen(0, "127.0.0.1", () => {
+        
+        console.info("\r\n Https SSL Cert Server Listening on ", httpsServer.address());
+
+        requestSSLCert();
+        setTimeout(endCertRequest, 10000);
+    });
+
+}
+
+function endCertRequest( fromRequest = false ) {
+    if (!fs.existsSync(currentConfig.key))
+        return setTimeout(endCertRequest, 10000);
+    else if(currentConfig.skipServer)    pacProxy.startServer();
+    else if(!fromRequest) return;
+
+    currentConfig.skipServer = false;
+
+    httpServer.close(() => console.log("\r\n Http SSL Cert Server Closed."))
+    httpsServer.close(() => console.log("\r\n Https SSL Cert Server Closed."))
     
-        httpsServer.listen(currentConfig.port, "0.0.0.0", function() {
-            console.info("\r\n Https Listening on ", httpsServer.address());
-        });
+}
 
-        currentConfig.server = httpsServer;
-        currentConfig.skiprequest = true;
-    }
+function requestSSLCert() {
 
-    const vlookup = dns.lookup;
-    const cacheable = new CacheableLookup({lookup: vlookup});
-    dns.lookup = cacheable.lookup;
+    let url = 'https://' + currentConfig.domain+ currentConfig.paclink ;
+    let options = new URL(url);
+    options.port = httpsServer.address().port;
 
-    pacProxy.proxy(currentConfig);
+    options.lookup = (hostname, opts, cb) => {
+      return cb(null, [{"address":'127.0.0.1', "family":4}]);
+    };
+    
+    const req = https.request(options, (res) => {
+        console.log('statusCode:', res.statusCode);
+        console.log('headers:', res.headers);
+      
+        endCertRequest(true);
+
+    });
+    
+    req.on('error', (e) => {
+        console.error(e);
+    });
 
 }
 

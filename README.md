@@ -58,7 +58,8 @@ sudo nohup ./server.js &
 ```
 tail -f nohup.out
 ```
-新版本也支持pm2:
+
+新版本也支持pm2, 比nohup更稳定:
 
 ```
 sudo npm install -g pm2@latest
@@ -101,14 +102,12 @@ npm update
 
 免费数字证书现在有效期缩短为3个月，建议每2个月更新一次数字证书
 
-```
-sudo ./server-linux forcert
-```
-加forcert参数运行服务后，从浏览器访问pacurl会更新数字证书，再以正常模式重启服务：
+新版本每次重启会在后台自动更新数字证书，建议至少每个月重启一次服务
 
 ```
-sudo nohup ./server-linux &
+sudo nohup ./server-linux forcert
 ```
+加forcert参数运行后，会强制更新数字证书后再启动服务
 
 ### 如果中间做错可以删掉从头再来：
 
