@@ -146,9 +146,10 @@ function endCertRequest() {
 function requestSSLCert() {
 
     let clookup = (hostname, opts, cb) => {
-      cb(null, '127.0.0.1', 4);
+        if(opts && opts.all)  cb(null, [{"address":'127.0.0.1', "family":4}]);  
+        else    cb(null, '127.0.0.1', 4);
     };
-    
+        
     const req = https.get({
         hostname: currentConfig.domain,
         path: currentConfig.paclink,
