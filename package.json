@@ -1,6 +1,6 @@
 {
   "name": "pacproxy-https-server",
-  "version": "1.3.7",
+  "version": "1.3.8",
   "description": "A pacproxy server runs in a web server",
   "main": "server.js",
   "bin": "server.js",
@@ -23,8 +23,9 @@
   },
   "homepage": "https://github.com/httpgate/pacproxy-server#readme",
   "dependencies": {
+    "buffer": "^6.0.3",  
     "greenlock-express": "^4.0.3",
-    "pacproxy-js": "^1.4.5",
+    "pacproxy-js": "^1.4.6",
     "ws": "^8.12.0",
     "readline-sync": "^1.4.10",
     "cacheable-lookup": "6.1.0" 
