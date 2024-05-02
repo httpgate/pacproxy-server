@@ -65,6 +65,12 @@ tail -f nohup.out
 sudo npm install -g pm2@latest
 sudo pm2 start runserver.js
 ```
+
+查看日志：
+
+```
+sudo pm2 logs --lines 100
+```
 可用pm2每天下午13点45分(举例)重启服务，清理内存：
 
 ```
@@ -82,7 +88,7 @@ sudo pm2 logs
 
 ```
 ps -ef | grep node
-kill -9 找到的pid
+sudo kill -9 找到的pid
 ```
 如果用pm2命令后台运行:
 
@@ -100,14 +106,20 @@ npm update
 ```
 ### 更新数字证书
 
-免费数字证书现在有效期缩短为3个月，建议每2个月更新一次数字证书
-
-新版本每次重启会在后台自动更新数字证书，建议至少每个月重启一次服务
+免费数字证书现在有效期缩短为3个月，建议用crontab每2个月更新一次数字证书
 
 ```
 sudo nohup ./server-linux forcert
 ```
 加forcert参数运行后，会强制更新数字证书后再启动服务
+
+新版本每次重启会在后台自动更新数字证书，建议至少每个月重启一次服务
+
+用pm2每个月5日18点（举例）重启服务：
+
+```
+sudo pm2 restart runserver --cron-restart="00 18 5 * *"
+```
 
 ### 如果中间做错可以删掉从头再来：
 
