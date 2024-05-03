@@ -90,7 +90,6 @@ sudo kill -9 找到的pid
 sudo pm2 delete runserver
 ```
 
-
 ### 升级Github代码：
 
 ```
@@ -100,7 +99,7 @@ npm update
 ```
 ### 更新数字证书
 
-免费数字证书现在有效期缩短为3个月，建议用crontab每月更新一次数字证书
+免费数字证书现在有效期为3个月，可过期前30天更新，建议用crontab每月更新一次数字证书
 
 ```
 sudo nohup ./server-linux forcert
