@@ -20,6 +20,8 @@ pacproxy runs in a web server 在vps服务器上运行的pacproxy加密代理
 
 可运行编译好的服务器软件，适合各种操作系统，笔记本和台式机：https://github.com/httpgate/resouces/tree/main/pacproxy-server
 
+也可以按以下步骤用pm2直接运行代码，可及时更新软件，且运行更稳定
+
 ### 初始化服务器，并修改网站设置
 
 ```
@@ -49,20 +51,6 @@ nano current.site.cfg
 ### 后台运行pacproxy服务：
 
 ```
-sudo nohup ./server.js &
-```
-加nohup防止关闭ssh连接后服务中止
-
-查看日志：
-
-```
-tail -f nohup.out
-```
-
-新版本也支持pm2, 比nohup更稳定:
-
-```
-sudo npm install -g pm2@latest
 sudo pm2 start runserver.js
 ```
 
@@ -77,14 +65,6 @@ sudo pm2 logs --lines 100
 sudo pm2 restart runserver --cron-restart="45 13 * * *"
 ```
 ### 停止pacproxy服务
-
-如果用nohup命令后台运行:
-
-```
-ps -ef | grep node
-sudo kill -9 找到的pid
-```
-如果用pm2命令后台运行:
 
 ```
 sudo pm2 delete runserver
@@ -101,11 +81,6 @@ npm update
 
 免费数字证书现在有效期为3个月，可过期前30天更新，建议用crontab每月更新一次数字证书
 
-```
-sudo nohup ./server-linux forcert
-```
-加forcert参数运行后，会强制更新数字证书后再启动服务
-
 新版本每次重启会在后台自动更新数字证书，用pm2每个月5日18点（举例）重启服务：
 
 ```
@@ -118,7 +93,6 @@ sudo pm2 restart runserver --cron-restart="00 18 5 * *"
 cd ..
 rm -rf ./pacproxy-server
 ```
-
 
 ## 推荐
 
