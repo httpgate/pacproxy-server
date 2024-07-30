@@ -120,13 +120,19 @@ function httpsWorker(vglx) {
     // (the ACME and http->https middleware are loaded by glx.httpServer)
     httpServer = glx.httpServer();
 
+    var httpReady = false;
+    var httpsReady = false;
+
     httpServer.listen(currentConfig.httpport, "0.0.0.0", () => {
+        httpReady = true;
+        if(httpsReady) requestSSLCert();
         //console.info("\r\n Http SSL Cert Server Listening on ", httpServer.address());
     });
 
     httpsServer.listen(0, "127.0.0.1", () => {
+        httpsReady = true;
         //console.info("\r\n Https SSL Cert Server Listening on ", httpsServer.address());
-        requestSSLCert();
+        if(httpReady) requestSSLCert();
     });
 
 }
