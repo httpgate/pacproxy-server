@@ -44,8 +44,6 @@ function loadConfig()
     console.log(currentConfig);
     if(!currentConfig) return false;
 
-    if(process.argv[2] && (process.argv[2].toLowerCase()=='forcert')) currentConfig.forcert = true;
-
     return true;
 }
 
@@ -93,11 +91,6 @@ function startServer()
     currentConfig.key  = path.resolve(process.cwd(), keydir1);
     currentConfig.cert  = path.resolve(process.cwd(), certdir1);
 
-    if ((currentConfig.forcert) || (!fs.existsSync(currentConfig.key)))
-        currentConfig.skipServer = true;
-
-    pacProxy.proxy(currentConfig);
-
     greenlock.init({
             packageRoot: process.cwd(),
             configDir: "./greenlock.d",
@@ -112,7 +105,10 @@ function httpsWorker(vglx) {
     if(vglx) glx = vglx;
 
     httpsServer = glx.httpsServer(null, function(req, res) {
-        pacProxy.handleRequest(req, res);
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'text/plain');
+        res.end('Hello pacproxy!');
+        console.log("\r\nSSL Cert issued\r\n");
     });
 
     // Note:
@@ -140,13 +136,11 @@ function httpsWorker(vglx) {
 function endCertRequest() {
     if (!fs.existsSync(currentConfig.key))
         readline.question("\r\nFailed to obtain SSL certificate [ok]");
-    else if(currentConfig.skipServer)    pacProxy.startServer();
-
-    currentConfig.skipServer = false;
+    else pacProxy.proxy(currentConfig);
 
     httpServer.close()
     httpsServer.close()
-    
+    console.log("\r\nFinished Obtain SSL certificate ");
 }
 
 function requestSSLCert() {
@@ -158,19 +152,18 @@ function requestSSLCert() {
         
     const req = https.get({
         hostname: currentConfig.domain,
-        path: currentConfig.paclink,
         port: httpsServer.address().port,
         lookup: clookup},  (res) => {
       
-        endCertRequest(true);
-
-        res.on("close", (d)=>req.socket.end() );
+        res.setEncoding('utf8');
+        let rawData = '';
+        res.on('data', (chunk) => { rawData += chunk; });
+        res.on('end', () => endCertRequest());
     });
     
     req.on('error', (e) => {
         console.error(e);
     });
-
 }
 
 
@@ -265,4 +258,3 @@ function checkDomain(address) {
 
     return true;
 }
-
