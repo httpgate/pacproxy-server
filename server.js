@@ -138,9 +138,10 @@ function endCertRequest() {
         readline.question("\r\nFailed to obtain SSL certificate [ok]");
     else pacProxy.proxy(currentConfig);
 
-    httpServer.close()
-    httpsServer.close()
-    console.log("\r\nFinished Obtain SSL certificate ");
+    setTimeout(()=>{
+        httpServer.close()
+        httpsServer.close()
+        console.log("\r\nFinished Obtain SSL certificate ");}, 20000);
 }
 
 function requestSSLCert() {
