@@ -38,7 +38,7 @@ cd pacproxy-server
 ### 运行pacproxy服务：
 
 ```
-sudo ./server.js
+sudo ./runserver.js
 ```
 核对屏幕上显示出的PAC链接，如果不对则需要修改网站配置文件：
 

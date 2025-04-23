@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 'use strict';
 
 const greenlock = require('greenlock-express');
@@ -11,25 +9,37 @@ const path = require('path');
 const dns = require('dns');
 const CacheableLookup = require('cacheable-lookup');
 const https = require('https');
+const NatAPI = require('nat-api')
 
 var currentConfig = false;
 var accountEmail = false;
 var glx = false;
 var httpServer = false;
 var httpsServer = false;
+var client = new NatAPI()
 
 exports.runServer = runServer;
 exports.app = app;
 
-if(process.argv[1].includes(__filename)) runServer();
-
 function runServer(vConfig){
     if(!vConfig) {
-        if(loadConfig()) startServer();
+        if(!loadConfig()) return;
     } else {
         currentConfig = vConfig
-        startServer();
     }
+
+    if(currentConfig.upnp){
+        client.unmap(80, () =>
+            client.map(80,currentConfig.httpport, function (err) {
+                if (err)
+                    return console.warn('upnp port 80 mapping failed!', err)
+                else
+                    console.warn('upnp Port 80 mapped!')
+                    startServer();    
+                })
+        );
+
+    }        
 }
 
 function loadConfig()
@@ -79,8 +89,8 @@ function startServer()
     if(! ('websocket' in currentConfig)) currentConfig.websocket = true;
     if(! ('behindTunnel' in currentConfig)) currentConfig.behindTunnel = false;
 
-    if(currentConfig.onrequest) currentConfig.onrequest = app.onrequest;
-    if(currentConfig.onconnection) currentConfig.onconnection = app.onconnection;
+    if(app.onrequest) currentConfig.onrequest = app.onrequest;
+    if(app.onconnection) currentConfig.onconnection = app.onconnection;
 
     const vlookup = dns.lookup;
     const cacheable = new CacheableLookup({lookup: vlookup});
@@ -125,6 +135,7 @@ function httpsWorker(vglx) {
         //console.info("\r\n Http SSL Cert Server Listening on ", httpServer.address());
     });
 
+
     httpsServer.listen(0, "127.0.0.1", () => {
         httpsReady = true;
         //console.info("\r\n Https SSL Cert Server Listening on ", httpsServer.address());
@@ -138,9 +149,23 @@ function endCertRequest() {
         readline.question("\r\nFailed to obtain SSL certificate [ok]");
     else pacProxy.proxy(currentConfig);
 
+    if(currentConfig.upnp){
+        client.unmap(currentConfig.proxyport, ()=>
+            client.map(currentConfig.proxyport,currentConfig.port, function (err) {
+                if (err)
+                console.warn('upnp port mapping failed!', err)
+                else
+                console.warn('upnp Port ' + currentConfig.proxyport +' mapped!')
+            })
+        );
+    }
+
     setTimeout(()=>{
         httpServer.close()
         httpsServer.close()
+        if(currentConfig.upnp){
+            client.unmap(80);
+        }
         console.log("\r\nFinished Obtain SSL certificate ");}, 20000);
 }
 
