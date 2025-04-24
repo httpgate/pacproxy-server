@@ -166,7 +166,7 @@ function endCertRequest() {
         if(currentConfig.upnp){
             client.unmap(80);
         }
-        console.log("\r\nFinished Obtain SSL certificate ");}, 20000);
+        console.log("\r\nFinished Obtain SSL certificate ");}, 30000);
 }
 
 function requestSSLCert() {

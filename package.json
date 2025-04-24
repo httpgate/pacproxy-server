@@ -30,7 +30,7 @@
   "dependencies": {
     "buffer": "^6.0.3",  
     "greenlock-express": "^4.0.3",
-    "pacproxy-js": "^1.5.6",
+    "pacproxy-js": "^1.5.7",
     "ws": "^8.17.0",
     "readline-sync": "^1.4.10",
     "cacheable-lookup": "6.1.0",
