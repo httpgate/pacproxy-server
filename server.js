@@ -4,7 +4,6 @@ const greenlock = require('greenlock-express');
 const fs = require('fs');
 const pacProxy = require('pacproxy-js');
 const app = require('./app.js');
-const readline = require('readline-sync');
 const path = require('path');
 const dns = require('dns');
 const CacheableLookup = require('cacheable-lookup');
@@ -38,8 +37,8 @@ function runServer(vConfig){
                     startServer();    
                 })
         );
+    } else startServer();    
 
-    }        
 }
 
 function loadConfig()
@@ -47,7 +46,7 @@ function loadConfig()
     if(fs.existsSync(process.cwd()+'/current.site.cfg')) currentConfig = require(process.cwd()+'/current.site.cfg');
     else {
         fs.copyFileSync(__dirname + '/example.site.cfg', process.cwd()+'/current.site.cfg');
-        readline.question("\r\nPlease Modify your site config file: current.site.cfg [ok]");
+        console.warn("\r\nPlease Modify your site config file: current.site.cfg!");
         return false;
     }
     console.log("\r\ndomain config:\r\n");
@@ -70,14 +69,14 @@ function startServer()
     }
 
     if(!accountEmail){
-        if(!checkEmail(currentConfig.email)) return readline.question('\r\ninvalid email format [ok]');
-        if(!checkDomain(currentConfig.domain)) return readline.question('\r\ninvalid domain format [ok]');
+        if(!checkEmail(currentConfig.email)) return console.warn('\r\ninvalid email format!');
+        if(!checkDomain(currentConfig.domain)) return console.warn('\r\ninvalid domain format!');
         var config = getConfig(currentConfig.email);
         var site = getSite(currentConfig.domain);
         accountEmail = currentConfig.email;
         addsite(config,site);
     } else if( !hassite(config,currentConfig.domain)) {
-        if(!checkDomain(currentConfig.domain)) return readline.question('\r\ninvalid domain format [ok]');
+        if(!checkDomain(currentConfig.domain)) return console.warn('\r\ninvalid domain format!');
         var site = getSite(currentConfig.domain);
         addsite(config,site);
     }
@@ -146,7 +145,7 @@ function httpsWorker(vglx) {
 
 function endCertRequest() {
     if (!fs.existsSync(currentConfig.key))
-        readline.question("\r\nFailed to obtain SSL certificate [ok]");
+        console.warn("\r\nFailed to obtain SSL certificate!");
     else pacProxy.proxy(currentConfig);
 
     if(currentConfig.upnp){
