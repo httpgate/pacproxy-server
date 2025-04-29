@@ -18,11 +18,11 @@ pacproxy runs in a web server 在vps服务器上运行的pacproxy加密代理
 
 ## 运行
 
-可运行编译好的服务器软件，适合各种操作系统，笔记本和台式机：https://github.com/httpgate/resouces/tree/main/pacproxy-server
+* 可运行[编译好的服务器软件](https://github.com/httpgate/resouces/tree/main/pacproxy-server) ，适合各种操作系统，笔记本和台式机
 
-推荐用pm2[直接运行pacproxy-https-server的npm包](https://github.com/httpgate/resouces/tree/main/pm2_Run_Npm_Package.md)
+* 推荐用pm2[直接运行pacproxy-https-server的npm库](https://github.com/httpgate/resouces/tree/main/pm2_Run_Npm_Package.md)
 
-也可以按以下步骤用pm2直接运行代码，运行更稳定，可及时更新软件
+* 也可以按以下步骤用pm2直接运行代码，运行更稳定，可及时更新软件
 
 ### 初始化服务器，并修改网站设置
 
