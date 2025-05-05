@@ -80,7 +80,7 @@ function startServer()
             module: dnsModuleName,
             token: currentConfig.cloudflare_token,
             verifyPropagation: true,
-            verbose: true 
+            verbose: false 
         };
     }
 
