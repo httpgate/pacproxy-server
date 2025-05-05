@@ -8,19 +8,18 @@ const path = require('path');
 const dns = require('dns');
 const CacheableLookup = require('cacheable-lookup');
 const https = require('https');
-const NatAPI = require('nat-api')
 
 var currentConfig = false;
 var accountEmail = false;
 var glx = false;
 var httpServer = false;
 var httpsServer = false;
-var client = new NatAPI()
+var client = false;
 
 exports.runServer = runServer;
 exports.app = app;
 
-function runServer(vConfig){
+async function runServer(vConfig){
     if(!vConfig) {
         if(!loadConfig()) return;
     } else {
@@ -28,17 +27,20 @@ function runServer(vConfig){
     }
 
     if(currentConfig.upnp){
-        client.unmap(80, () =>
-            client.map(80,currentConfig.httpport, function (err) {
-                if (err)
-                    return console.warn('upnp port 80 mapping failed!', err)
-                else
-                    console.warn('upnp Port 80 mapped!')
-                    startServer();    
-                })
-        );
-    } else startServer();    
+        await import('@silentbot1/nat-api').then( mod =>{
+            client =  new mod.default({ enablePMP: true, enableUPNP: true });
+          });
 
+        await client.unmap(80);
+
+        client.map(80,currentConfig.httpport).then((err)=> {
+            console.warn('upnp Port 80 mapped!');
+            startServer();    
+        }).catch((err) => {
+            return console.warn('upnp port 80 mapping failed!', err);
+        });
+
+    } else startServer();    
 }
 
 function loadConfig()
@@ -149,13 +151,11 @@ function endCertRequest() {
     else pacProxy.proxy(currentConfig);
 
     if(currentConfig.upnp){
-        client.unmap(currentConfig.proxyport, ()=>
-            client.map(currentConfig.proxyport,currentConfig.port, function (err) {
-                if (err)
-                console.warn('upnp port mapping failed!', err)
-                else
+        client.unmap(currentConfig.proxyport).then(()=>
+            client.map(currentConfig.proxyport,currentConfig.port).then(()=>
                 console.warn('upnp Port ' + currentConfig.proxyport +' mapped!')
-            })
+            ).catch((err) =>
+                console.warn('upnp port mapping failed!', err))
         );
     }
 
