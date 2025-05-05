@@ -15,6 +15,8 @@ var glx = false;
 var httpServer = false;
 var httpsServer = false;
 var client = false;
+var clChallenge = false;
+var dnsModuleName = false;
 
 exports.runServer = runServer;
 exports.app = app;
@@ -70,16 +72,28 @@ function startServer()
         //console.log(e);
     }
 
+    dns.setServers(['1.1.1.1', '8.8.8.8', '208.67.222.222', '8.8.4.4', '208.67.220.220']);
+
+    if(currentConfig.cloudflare_token){
+        dnsModuleName = 'acme-dns-01-cloudflare';
+        clChallenge = {
+            module: dnsModuleName,
+            token: currentConfig.cloudflare_token,
+            verifyPropagation: true,
+            verbose: true 
+        };
+    }
+
     if(!accountEmail){
         if(!checkEmail(currentConfig.email)) return console.warn('\r\ninvalid email format!');
         if(!checkDomain(currentConfig.domain)) return console.warn('\r\ninvalid domain format!');
         var config = getConfig(currentConfig.email);
-        var site = getSite(currentConfig.domain);
+        var site = getSite(currentConfig.domain,clChallenge);
         accountEmail = currentConfig.email;
         addsite(config,site);
-    } else if( !hassite(config,currentConfig.domain)) {
+    } else if( !hassite(config,currentConfig.domain,dnsModuleName)) {
         if(!checkDomain(currentConfig.domain)) return console.warn('\r\ninvalid domain format!');
-        var site = getSite(currentConfig.domain);
+        var site = getSite(currentConfig.domain,clChallenge);
         addsite(config,site);
     }
 
@@ -92,10 +106,6 @@ function startServer()
 
     if(app.onrequest) currentConfig.onrequest = app.onrequest;
     if(app.onconnection) currentConfig.onconnection = app.onconnection;
-
-    const vlookup = dns.lookup;
-    const cacheable = new CacheableLookup({lookup: vlookup});
-    dns.lookup = cacheable.lookup;
 
     let keydir1 = './greenlock.d/live/' + currentConfig.domain + '/privkey.pem';
     let certdir1 = './greenlock.d/live/' + currentConfig.domain + '/fullchain.pem';
@@ -130,24 +140,24 @@ function httpsWorker(vglx) {
     var httpReady = false;
     var httpsReady = false;
 
-    httpServer.listen(currentConfig.httpport, "0.0.0.0", () => {
-        httpReady = true;
-        if(httpsReady) requestSSLCert();
-        //console.info("\r\n Http SSL Cert Server Listening on ", httpServer.address());
-    });
-
-
     httpsServer.listen(0, "127.0.0.1", () => {
         httpsReady = true;
         //console.info("\r\n Https SSL Cert Server Listening on ", httpsServer.address());
-        if(httpReady) requestSSLCert();
+        if(httpReady || currentConfig.cloudflare_token) requestSSLCert();
     });
 
+    if(!currentConfig.cloudflare_token){
+        httpServer.listen(currentConfig.httpport, "0.0.0.0", () => {
+            httpReady = true;
+            if(httpsReady) requestSSLCert();
+            //console.info("\r\n Http SSL Cert Server Listening on ", httpServer.address());
+        });
+    }
 }
 
 function endCertRequest() {
     if (!fs.existsSync(currentConfig.key))
-        console.warn("\r\nFailed to obtain SSL certificate!");
+        return console.warn("\r\nFailed to obtain SSL certificate!");
     else pacProxy.proxy(currentConfig);
 
     if(currentConfig.upnp){
@@ -159,9 +169,13 @@ function endCertRequest() {
         );
     }
 
+    const vlookup = dns.lookup;
+    const cacheable = new CacheableLookup({lookup: vlookup});
+    dns.lookup = cacheable.lookup;    
+    
     setTimeout(()=>{
-        httpServer.close()
-        httpsServer.close()
+        httpServer.close();
+        httpsServer.close();
         if(currentConfig.upnp){
             client.unmap(80);
         }
@@ -214,18 +228,20 @@ function getConfig(email){
 }
 
 
-function getSite(domain){
-    return {
+function getSite(domain, dnsChallenge){
+    const site= {
         "subject": domain,
-        "altnames": [
-            domain
-        ],
         "renewAt": 1
     };
+
+    if(dnsChallenge) site.challenges={"dns-01":dnsChallenge};
+
+    return site;
 }
 
 
 function addsite(config,site){
+    config.sites=[];
     config.sites.push(site);
     try{
         if(fs.existsSync(process.cwd()+'/greenlock.d/config.json')) fs.renameSync(process.cwd()+'/greenlock.d/config.json',process.cwd()+'/greenlock.d/config.json.bak'); 
@@ -240,15 +256,17 @@ function addsite(config,site){
     }
 }
 
-function hassite(config,domain){
-    let domainExists = false;
+function hassite(config,domain,dnsModuleName){
+    var _hassite = false;
     config.sites.forEach(element => {
         if(element.subject==domain) {
             console.warn('domain already exists 域名已经存在');
-            domainExists = true;
+            if(dnsModuleName){
+                if(element.challenges && element.challenges["dns-01"] && element.challenges["dns-01"].module==dnsModuleName && element.challenges["dns-01"].token==currentConfig.cloudflare_token )  _hassite = true;
+            }
         }
     });
-    return domainExists;
+    return _hassite;
 }
 
 

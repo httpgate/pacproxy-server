@@ -19,7 +19,7 @@
     "代理",
     "vpn",
     "安全",
-    "加密"  
+    "加密"
   ],
   "author": "xinjingjie.us@gmail.com",
   "license": "GPL-3.0-or-later",
@@ -28,16 +28,17 @@
   },
   "homepage": "https://github.com/httpgate/pacproxy-server#readme",
   "dependencies": {
-    "buffer": "^6.0.3",  
+    "@silentbot1/nat-api": "^0.4.8",
+    "acme-dns-01-cloudflare": "^1.2.5",
+    "buffer": "^6.0.3",
+    "cacheable-lookup": "6.1.0",
     "greenlock-express": "^4.0.3",
     "pacproxy-js": "^1.5.8",
-    "ws": "^8.17.0",
-    "cacheable-lookup": "6.1.0",
-    "@silentbot1/nat-api": "^0.4.8"
+    "ws": "^8.17.0"
   },
   "pkg": {
     "assets": [
       "example.site.cfg"
     ]
-  }  
+  }
 }
