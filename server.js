@@ -174,7 +174,7 @@ function endCertRequest() {
         httpServer.close();
         httpsServer.close();
         if(currentConfig.upnp){
-            client.unmap(80);
+            client.unmap(80).then(() => client.destroy());
         }
         console.log("\r\nFinished Obtain SSL certificate ");}, 30000);
 }
