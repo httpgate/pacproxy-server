@@ -1,6 +1,6 @@
 {
   "name": "pacproxy-https-server",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "pacproxy server with auto SSL certificate renew and load. 自动更新和加载SSL数字证书的加密代理服务器",
   "main": "server.js",
   "bin": "runserver.js",
@@ -33,7 +33,7 @@
     "buffer": "^6.0.3",
     "cacheable-lookup": "6.1.0",
     "greenlock-express": "^4.0.3",
-    "pacproxy-js": "^1.5.8",
+    "pacproxy-js": "^1.6.1",
     "ws": "^8.17.0"
   },
   "pkg": {

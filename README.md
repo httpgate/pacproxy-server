@@ -17,6 +17,8 @@ pacproxy runs in a web server 在vps服务器上运行的pacproxy加密代理
 
 * 需要ssh到服务器的命令行，推荐用[Bitvise SSH Client](https://bitvise.com/ssh-client-download)
 
+* 需要准备服务器设置文件current.site.cfg, 空白文件夹下第一次运行服务器会生成该该文件样板，详情参考[样板](example.site.cfg)
+
 
 ## 运行
 
