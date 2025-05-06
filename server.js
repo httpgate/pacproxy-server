@@ -8,13 +8,14 @@ const path = require('path');
 const dns = require('dns');
 const CacheableLookup = require('cacheable-lookup');
 const https = require('https');
+const NatAPI = require('@silentbot1/nat-api')
+const client = new NatAPI({ enablePMP: true, enableUPNP: true })
 
 var currentConfig = false;
 var accountEmail = false;
 var glx = false;
 var httpServer = false;
 var httpsServer = false;
-var client = false;
 var clChallenge = false;
 var dnsModuleName = false;
 
@@ -29,10 +30,6 @@ async function runServer(vConfig){
     }
 
     if(currentConfig.upnp){
-        await import('@silentbot1/nat-api').then( mod =>{
-            client =  new mod.default({ enablePMP: true, enableUPNP: true });
-          });
-
         await client.unmap(80);
 
         client.map(80,currentConfig.httpport).then((err)=> {
@@ -79,8 +76,8 @@ function startServer()
         clChallenge = {
             module: dnsModuleName,
             token: currentConfig.cloudflare_token,
-            verifyPropagation: true,
-            verbose: false 
+            verifyPropagation: false,
+            verbose: true 
         };
     }
 
@@ -263,7 +260,7 @@ function hassite(config,domain,dnsModuleName){
             console.warn('domain already exists 域名已经存在');
             if(dnsModuleName){
                 if(element.challenges && element.challenges["dns-01"] && element.challenges["dns-01"].module==dnsModuleName && element.challenges["dns-01"].token==currentConfig.cloudflare_token )  _hassite = true;
-            }
+            } else if(!element.challenges) _hassite = true;
         }
     });
     return _hassite;
