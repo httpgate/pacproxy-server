@@ -11,6 +11,7 @@ const NatAPI = require('@silentbot1/nat-api')
 const client = new NatAPI({ enablePMP: true, enableUPNP: true })
 const send = require('@fastify/send')
 const serveIndex = require('serve-index')
+const rootDir = process.cwd() +'/website';
 
 var currentConfig = false;
 var accountEmail = false;
@@ -29,7 +30,6 @@ async function runServer(vConfig){
         currentConfig = vConfig
     }
 
-    const rootDir = process.cwd() +'/website';
     if(!fs.existsSync(rootDir)) var msg = 'Please create website folder: ' + rootDir;
     
     if(currentConfig.website===true){
@@ -73,7 +73,6 @@ function loadConfig()
 }
 
 async function onFolderRequest (req, res) {
-    const rootDir = process.cwd() +'/website';
 
     let index = serveIndex(rootDir, {'icons': true});
     let pathName = req.url.indexOf('?')>0 ? req.url.substring(0, req.url.indexOf('?')) : req.url;
@@ -89,7 +88,6 @@ async function onFolderRequest (req, res) {
 }
 
 async function onWebsiteRequest (req, res) {
-    const rootDir = process.cwd() +'/website';
 
     let pathName = req.url.indexOf('?')>0 ? req.url.substring(0, req.url.indexOf('?')) : req.url;
 
