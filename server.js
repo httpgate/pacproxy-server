@@ -29,7 +29,7 @@ async function runServer(vConfig){
         currentConfig = vConfig
     }
 
-    if(currentConfig.upnp){
+    if(!currentConfig.cloudflare_token && currentConfig.upnp){
         await client.unmap(80);
 
         client.map(80,currentConfig.httpport).then((err)=> {
@@ -174,7 +174,8 @@ function endCertRequest() {
         httpServer.close();
         httpsServer.close();
         if(currentConfig.upnp){
-            client.unmap(80).then(() => client.destroy());
+            if(!currentConfig.cloudflare_token) client.unmap(80).then(() => client.destroy());
+            else client.destroy();
         }
         console.log("\r\nFinished Obtain SSL certificate ");}, 30000);
 }
