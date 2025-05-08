@@ -41,6 +41,21 @@ cd pacproxy-server
   编辑当前网站设置并按Ctrl + O保存，Ctrl + X退出
 
 
+### 设置website参数
+
+current.site.cfg里的website参数可以为空'', 可以是外部网站URL, 可以是true或false
+
+设置为true或false时需要先在当前文件夹下创建website文件夹：mkdir website
+
+设置为true时website文件夹可放一个静态网站，或一些可下载的文件。可以用chrome浏览器访问某个网页，然后保存到website文件夹里，类型选”Webpage, Complete", 文件名为：index.html
+
+设置为false时会将website显示为一个文件夹，列出website里的所有文件。此时建议设置website_auth参数，保护信息隐私
+
+设置website为外部网站URL时会将该网站的内容显示到自己的网站上，此时需要留意黑客DDOS攻击，会导致自己IP因为中转DDOS攻击被该外部网站和一些CDN屏蔽。此时可设置website_auth参数, 或改为使用本地网站。
+
+website参数设置好后，浏览器访问： https://your.site.domain 可以显示网站的内容，也可以将一些需要分享给他人下载的文件放到website文件夹内
+
+
 ### 运行pacproxy服务：
 
 ```

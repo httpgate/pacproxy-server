@@ -3,13 +3,14 @@
 const greenlock = require('greenlock-express');
 const fs = require('fs');
 const pacProxy = require('pacproxy-js');
-const app = require('./app.js');
 const path = require('path');
 const dns = require('dns');
 const CacheableLookup = require('cacheable-lookup');
 const https = require('https');
 const NatAPI = require('@silentbot1/nat-api')
 const client = new NatAPI({ enablePMP: true, enableUPNP: true })
+const send = require('@fastify/send')
+const serveIndex = require('serve-index')
 
 var currentConfig = false;
 var accountEmail = false;
@@ -28,6 +29,21 @@ async function runServer(vConfig){
     } else {
         currentConfig = vConfig
     }
+
+    const rootDir = process.cwd() +'/website';
+    if(!fs.existsSync(rootDir)) var msg = 'Please create website folder: ' + rootDir;
+    
+    if(currentConfig.website===true){
+        currentConfig.onrequest = onWebsiteRequest;
+        currentConfig.website = '';
+    } else if(currentConfig.website===false){
+        currentConfig.onrequest = onFolderRequest;
+        currentConfig.website = '';
+    } else {
+        msg = '';
+    }
+    if(msg) console.warn(msg);
+
 
     if(!currentConfig.cloudflare_token && currentConfig.upnp){
         await client.unmap(80);
@@ -57,6 +73,27 @@ function loadConfig()
     return true;
 }
 
+async function onFolderRequest (req, res) {
+    let index = serveIndex(rootDir, {'icons': true});
+    let pathName = req.url.indexOf('?')>0 ? req.url.substring(0, req.url.indexOf('?')) : req.url;
+
+    if(pathName.endsWith('/')) return index(req,res, ()=>res.end('<pre>Not Found</pre>'));
+
+    sent = await send(req, pathName, { root: rootDir});
+
+    if(sent.type === 'directory') return index(req,res, ()=>res.end('<pre>Not Found</pre>'));
+
+    res.writeHead(sent.statusCode, sent.headers);
+    sent.stream.pipe(res);
+}
+
+async function onWebsiteRequest (req, res) {
+    let pathName = req.url.indexOf('?')>0 ? req.url.substring(0, req.url.indexOf('?')) : req.url;
+
+    sent = await send(req, pathName, { root: rootDir});
+    res.writeHead(sent.statusCode, sent.headers);
+    sent.stream.pipe(res);
+}
 
 function startServer()
 {
@@ -100,9 +137,6 @@ function startServer()
     if(!currentConfig.proxyport) currentConfig.proxyport = 443;
     if(! ('websocket' in currentConfig)) currentConfig.websocket = true;
     if(! ('behindTunnel' in currentConfig)) currentConfig.behindTunnel = false;
-
-    if(app.onrequest) currentConfig.onrequest = app.onrequest;
-    if(app.onconnection) currentConfig.onconnection = app.onconnection;
 
     let keydir1 = './greenlock.d/live/' + currentConfig.domain + '/privkey.pem';
     let certdir1 = './greenlock.d/live/' + currentConfig.domain + '/fullchain.pem';
