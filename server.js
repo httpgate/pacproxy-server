@@ -21,7 +21,6 @@ var clChallenge = false;
 var dnsModuleName = false;
 
 exports.runServer = runServer;
-exports.app = app;
 
 async function runServer(vConfig){
     if(!vConfig) {
