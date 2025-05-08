@@ -37,7 +37,7 @@ async function runServer(vConfig){
         currentConfig.website = '';
     } else if(currentConfig.website===false){
         currentConfig.onrequest = onFolderRequest;
-        currentConfig.website = '';
+        currentConfig.website = ''; 
     } else {
         msg = '';
     }
@@ -73,12 +73,14 @@ function loadConfig()
 }
 
 async function onFolderRequest (req, res) {
+    const rootDir = process.cwd() +'/website';
+
     let index = serveIndex(rootDir, {'icons': true});
     let pathName = req.url.indexOf('?')>0 ? req.url.substring(0, req.url.indexOf('?')) : req.url;
 
     if(pathName.endsWith('/')) return index(req,res, ()=>res.end('<pre>Not Found</pre>'));
 
-    sent = await send(req, pathName, { root: rootDir});
+    let sent = await send(req, pathName, { root: rootDir});
 
     if(sent.type === 'directory') return index(req,res, ()=>res.end('<pre>Not Found</pre>'));
 
@@ -87,9 +89,11 @@ async function onFolderRequest (req, res) {
 }
 
 async function onWebsiteRequest (req, res) {
+    const rootDir = process.cwd() +'/website';
+
     let pathName = req.url.indexOf('?')>0 ? req.url.substring(0, req.url.indexOf('?')) : req.url;
 
-    sent = await send(req, pathName, { root: rootDir});
+    let sent = await send(req, pathName, { root: rootDir});
     res.writeHead(sent.statusCode, sent.headers);
     sent.stream.pipe(res);
 }
