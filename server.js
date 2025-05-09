@@ -11,7 +11,9 @@ const NatAPI = require('@silentbot1/nat-api')
 const client = new NatAPI({ enablePMP: true, enableUPNP: true })
 const send = require('@fastify/send')
 const serveIndex = require('serve-index')
-const rootDir = process.cwd() +'/website';
+const rootDir = path.resolve(process.cwd(), 'website');
+const index = serveIndex(rootDir, {'icons': true});
+const html404 = '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<title>Error</title>\n</head>\n<body>\n<pre>Not Found</pre>\n</body>\n</html>';
 
 var currentConfig = false;
 var accountEmail = false;
@@ -74,14 +76,18 @@ function loadConfig()
 
 async function onFolderRequest (req, res) {
 
-    let index = serveIndex(rootDir, {'icons': true});
-    let pathName = req.url.indexOf('?')>0 ? req.url.substring(0, req.url.indexOf('?')) : req.url;
+    const onNotFound = () => {
+        res.statusCode = 404;
+        res.end(html404);
+    }
 
-    if(pathName.endsWith('/')) return index(req,res, ()=>res.end('<pre>Not Found</pre>'));
+    const pathName = req.url.indexOf('?')>0 ? req.url.substring(0, req.url.indexOf('?')) : req.url;
 
-    let sent = await send(req, pathName, { root: rootDir});
+    if(pathName.endsWith('/')) return index(req,res, onNotFound);
 
-    if(sent.type === 'directory') return index(req,res, ()=>res.end('<pre>Not Found</pre>'));
+    const sent = await send(req, pathName, { root: rootDir});
+
+    if(sent.type === 'directory') return index(req,res, onNotFound);
 
     res.writeHead(sent.statusCode, sent.headers);
     sent.stream.pipe(res);
@@ -89,9 +95,9 @@ async function onFolderRequest (req, res) {
 
 async function onWebsiteRequest (req, res) {
 
-    let pathName = req.url.indexOf('?')>0 ? req.url.substring(0, req.url.indexOf('?')) : req.url;
+    const pathName = req.url.indexOf('?')>0 ? req.url.substring(0, req.url.indexOf('?')) : req.url;
 
-    let sent = await send(req, pathName, { root: rootDir});
+    const sent = await send(req, pathName, { root: rootDir});
     res.writeHead(sent.statusCode, sent.headers);
     sent.stream.pipe(res);
 }
@@ -99,7 +105,7 @@ async function onWebsiteRequest (req, res) {
 function startServer()
 {
     try {
-        let rawdata = fs.readFileSync(process.cwd()+'/greenlock.d/config.json');
+        const rawdata = fs.readFileSync(process.cwd()+'/greenlock.d/config.json');
         var config = JSON.parse(rawdata);
         accountEmail = config.defaults.subscriberEmail;
         console.log("maintainer: " + accountEmail + '\r\n');
@@ -123,12 +129,12 @@ function startServer()
         if(!checkEmail(currentConfig.email)) return console.warn('\r\ninvalid email format!');
         if(!checkDomain(currentConfig.domain)) return console.warn('\r\ninvalid domain format!');
         var config = getConfig(currentConfig.email);
-        var site = getSite(currentConfig.domain,clChallenge);
+        var site = getSite(config,currentConfig.domain,clChallenge);
         accountEmail = currentConfig.email;
         addsite(config,site);
     } else if( !hassite(config,currentConfig.domain,dnsModuleName)) {
         if(!checkDomain(currentConfig.domain)) return console.warn('\r\ninvalid domain format!');
-        var site = getSite(currentConfig.domain,clChallenge);
+        var site = getSite(config,currentConfig.domain,clChallenge);
         addsite(config,site);
     }
 
@@ -139,8 +145,8 @@ function startServer()
     if(! ('websocket' in currentConfig)) currentConfig.websocket = true;
     if(! ('behindTunnel' in currentConfig)) currentConfig.behindTunnel = false;
 
-    let keydir1 = './greenlock.d/live/' + currentConfig.domain + '/privkey.pem';
-    let certdir1 = './greenlock.d/live/' + currentConfig.domain + '/fullchain.pem';
+    const keydir1 = './greenlock.d/live/' + currentConfig.domain + '/privkey.pem';
+    const certdir1 = './greenlock.d/live/' + currentConfig.domain + '/fullchain.pem';
     currentConfig.key  = path.resolve(process.cwd(), keydir1);
     currentConfig.cert  = path.resolve(process.cwd(), certdir1);
 
@@ -164,9 +170,6 @@ function httpsWorker(vglx) {
         console.log("\r\nSSL Cert issued\r\n");
     });
 
-    // Note:
-    // You must ALSO listen on port 80 for ACME HTTP-01 Challenges
-    // (the ACME and http->https middleware are loaded by glx.httpServer)
     httpServer = glx.httpServer();
 
     var httpReady = false;
@@ -217,7 +220,7 @@ function endCertRequest() {
 
 function requestSSLCert() {
 
-    let clookup = (hostname, opts, cb) => {
+    const clookup = (hostname, opts, cb) => {
         if(opts && opts.all)  cb(null, [{"address":'127.0.0.1', "family":4}]);  
         else    cb(null, '127.0.0.1', 4);
     };
@@ -261,13 +264,20 @@ function getConfig(email){
 }
 
 
-function getSite(domain, dnsChallenge){
+function getSite(config, domain, dnsChallenge){
     const site= {
         "subject": domain,
         "renewAt": 1
     };
 
-    if(dnsChallenge) site.challenges={"dns-01":dnsChallenge};
+    config.sites.forEach(element => {
+        if(element.subject==domain) {
+            site.renewAt = element.renewAt;
+            site.altnames = element.altnames;
+        }
+    });
+
+    if(dnsChallenge) site.challenges={"dns-01":dnsChallenge}
 
     return site;
 }
@@ -290,7 +300,7 @@ function addsite(config,site){
 }
 
 function hassite(config,domain,dnsModuleName){
-    var _hassite = false;
+    let _hassite = false;
     config.sites.forEach(element => {
         if(element.subject==domain) {
             console.warn('domain already exists 域名已经存在');
@@ -305,18 +315,10 @@ function hassite(config,domain,dnsModuleName){
 
 function checkEmail(email) {
     if (!email) return false;
-  
-    var emailParts = email.split('@');
-  
-    if(emailParts.length !== 2) return false;
-  
-    var account = emailParts[0];
-    var address = emailParts[1];
-  
+    const {account,address} = email.split('@');
+    if(!address) return false;
     if(account.length > 64) return false;
-  
     if(!checkDomain(address)) return false;
-  
     return true;
 }
 
