@@ -26,11 +26,14 @@ var dnsModuleName = false;
 exports.runServer = runServer;
 
 async function runServer(vConfig){
+
     if(!vConfig) {
         if(!loadConfig()) return;
     } else {
         currentConfig = vConfig
     }
+
+    dns.setServers(['1.1.1.1', '8.8.8.8', '208.67.222.222', '8.8.4.4', '208.67.220.220']);
 
     if(!fs.existsSync(rootDir)) var msg = 'Please create website folder: ' + rootDir;
     
@@ -53,7 +56,7 @@ async function runServer(vConfig){
     if(! ('websocket' in currentConfig)) currentConfig.websocket = true;
     if(! ('behindTunnel' in currentConfig)) currentConfig.behindTunnel = false;
 
-    if(currentConfig.certdir || (currentConfig.cert && currentConfig.key)) return pacProxy.proxy(currentConfig);
+    if(currentConfig.certdir || (currentConfig.cert && currentConfig.key)) return startProxy();
 
     const keydir1 = './greenlock.d/live/' + currentConfig.domain + '/privkey.pem';
     const certdir1 = './greenlock.d/live/' + currentConfig.domain + '/fullchain.pem';
@@ -67,14 +70,15 @@ async function runServer(vConfig){
             console.warn('upnp Port 80 mapped!');
             startServer();    
         }).catch((err) => {
-            return console.warn('upnp port 80 mapping failed!', err);
+            console.warn('upnp port 80 mapping failed!', err);
         });
 
     } else startServer();    
 }
 
-function loadConfig()
-{
+
+function loadConfig(){
+
     if(fs.existsSync(process.cwd()+'/current.site.cfg')) currentConfig = require(process.cwd()+'/current.site.cfg');
     else {
         fs.copyFileSync(__dirname + '/example.site.cfg', process.cwd()+'/current.site.cfg');
@@ -87,6 +91,7 @@ function loadConfig()
 
     return true;
 }
+
 
 async function onFolderRequest (req, res) {
 
@@ -104,6 +109,7 @@ async function onFolderRequest (req, res) {
     sent.stream.pipe(res);
 }
 
+
 async function onWebsiteRequest (req, res) {
 
     const pathName = req.url.indexOf('?')>0 ? req.url.substring(0, req.url.indexOf('?')) : req.url;
@@ -112,8 +118,28 @@ async function onWebsiteRequest (req, res) {
     sent.stream.pipe(res);
 }
 
-function startServer()
-{
+
+function startProxy(){
+
+    pacProxy.proxy(currentConfig);
+
+    if(currentConfig.upnp){
+        client.unmap(currentConfig.proxyport).then(()=>
+            client.map(currentConfig.proxyport,currentConfig.port).then(()=>
+                console.warn('upnp Port ' + currentConfig.proxyport +' mapped!')
+            ).catch((err) =>
+                console.warn('upnp port mapping failed!', err))
+        );
+    }
+
+    const vlookup = dns.lookup;
+    const cacheable = new CacheableLookup({lookup: vlookup});
+    dns.lookup = cacheable.lookup;        
+}
+
+
+function startServer(){
+
     try {
         const rawdata = fs.readFileSync(process.cwd()+'/greenlock.d/config.json');
         var config = JSON.parse(rawdata);
@@ -122,8 +148,6 @@ function startServer()
     } catch(e) {
         //console.log(e);
     }
-
-    dns.setServers(['1.1.1.1', '8.8.8.8', '208.67.222.222', '8.8.4.4', '208.67.220.220']);
 
     if(currentConfig.cloudflare_token){
         dnsModuleName = 'acme-dns-01-cloudflare';
@@ -158,6 +182,7 @@ function startServer()
         .ready(httpsWorker);
 }
 
+
 function httpsWorker(vglx) {
     if(vglx) glx = vglx;
 
@@ -188,24 +213,12 @@ function httpsWorker(vglx) {
     }
 }
 
+
 function endCertRequest() {
-    if (!fs.existsSync(currentConfig.key))
-        return console.warn("\r\nFailed to obtain SSL certificate!");
-    else pacProxy.proxy(currentConfig);
+    if (!fs.existsSync(currentConfig.key))  return console.warn("\r\nFailed to obtain SSL certificate!");
 
-    if(currentConfig.upnp){
-        client.unmap(currentConfig.proxyport).then(()=>
-            client.map(currentConfig.proxyport,currentConfig.port).then(()=>
-                console.warn('upnp Port ' + currentConfig.proxyport +' mapped!')
-            ).catch((err) =>
-                console.warn('upnp port mapping failed!', err))
-        );
-    }
+    startProxy();
 
-    const vlookup = dns.lookup;
-    const cacheable = new CacheableLookup({lookup: vlookup});
-    dns.lookup = cacheable.lookup;    
-    
     setTimeout(()=>{
         httpServer.close();
         httpsServer.close();
@@ -215,6 +228,7 @@ function endCertRequest() {
         }
         console.log("\r\nFinished Obtain SSL certificate ");}, 30000);
 }
+
 
 function requestSSLCert() {
 
@@ -296,6 +310,7 @@ function addsite(config,site){
         return false;
     }
 }
+
 
 function hassite(config,domain,dnsModuleName){
     let _hassite = false;
