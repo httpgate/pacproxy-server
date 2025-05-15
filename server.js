@@ -45,6 +45,20 @@ async function runServer(vConfig){
     }
     if(msg) console.warn(msg);
 
+    if(! ('https' in currentConfig)) currentConfig.https = true;
+    if(!currentConfig.httpport) currentConfig.httpport = 80;
+    if(!currentConfig.port) currentConfig.port = 443;
+    if(!currentConfig.proxyport) currentConfig.proxyport = 443;
+    if(! ('pacpass' in currentConfig)) currentConfig.pacpass = [];
+    if(! ('websocket' in currentConfig)) currentConfig.websocket = true;
+    if(! ('behindTunnel' in currentConfig)) currentConfig.behindTunnel = false;
+
+    if(currentConfig.certdir || (currentConfig.cert && currentConfig.key)) return pacProxy.proxy(currentConfig);
+
+    const keydir1 = './greenlock.d/live/' + currentConfig.domain + '/privkey.pem';
+    const certdir1 = './greenlock.d/live/' + currentConfig.domain + '/fullchain.pem';
+    currentConfig.key  = path.resolve(process.cwd(), keydir1);
+    currentConfig.cert  = path.resolve(process.cwd(), certdir1);    
 
     if(!currentConfig.cloudflare_token && currentConfig.upnp){
         await client.unmap(80);
@@ -82,11 +96,8 @@ async function onFolderRequest (req, res) {
     }
 
     const pathName = req.url.indexOf('?')>0 ? req.url.substring(0, req.url.indexOf('?')) : req.url;
-
     if(pathName.endsWith('/')) return index(req,res, onNotFound);
-
     const sent = await send(req, pathName, { root: rootDir});
-
     if(sent.type === 'directory') return index(req,res, onNotFound);
 
     res.writeHead(sent.statusCode, sent.headers);
@@ -96,7 +107,6 @@ async function onFolderRequest (req, res) {
 async function onWebsiteRequest (req, res) {
 
     const pathName = req.url.indexOf('?')>0 ? req.url.substring(0, req.url.indexOf('?')) : req.url;
-
     const sent = await send(req, pathName, { root: rootDir});
     res.writeHead(sent.statusCode, sent.headers);
     sent.stream.pipe(res);
@@ -137,18 +147,6 @@ function startServer()
         var site = getSite(config,currentConfig.domain,clChallenge);
         addsite(config,site);
     }
-
-    if(! ('https' in currentConfig)) currentConfig.https = true;
-    if(!currentConfig.httpport) currentConfig.httpport = 80;
-    if(!currentConfig.port) currentConfig.port = 443;
-    if(!currentConfig.proxyport) currentConfig.proxyport = 443;
-    if(! ('websocket' in currentConfig)) currentConfig.websocket = true;
-    if(! ('behindTunnel' in currentConfig)) currentConfig.behindTunnel = false;
-
-    const keydir1 = './greenlock.d/live/' + currentConfig.domain + '/privkey.pem';
-    const certdir1 = './greenlock.d/live/' + currentConfig.domain + '/fullchain.pem';
-    currentConfig.key  = path.resolve(process.cwd(), keydir1);
-    currentConfig.cert  = path.resolve(process.cwd(), certdir1);
 
     greenlock.init({
             packageRoot: process.cwd(),
@@ -325,7 +323,6 @@ function checkEmail(email) {
 
 function checkDomain(address) {
     if (!address) return false;
-  
     else if(address.length > 255) return false
   
     var domainParts = address.split('.');
