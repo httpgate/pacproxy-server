@@ -328,7 +328,7 @@ function hassite(config,domain,dnsModuleName){
 
 function checkEmail(email) {
     if (!email) return false;
-    const {account,address} = email.split('@');
+    const [account,address]= email.split('@');
     if(!address) return false;
     if(account.length > 64) return false;
     if(!checkDomain(address)) return false;
