@@ -3,6 +3,7 @@
 const greenlock = require('greenlock-express');
 const fs = require('fs');
 const pacProxy = require('pacproxy-js');
+const shareModule = require('pacproxy-share');
 const path = require('path');
 const dns = require('dns');
 const CacheableLookup = require('cacheable-lookup');
@@ -36,6 +37,17 @@ async function runServer(vConfig){
     dns.setServers(['1.1.1.1', '8.8.8.8', '208.67.222.222', '8.8.4.4', '208.67.220.220']);
 
     if(!fs.existsSync(rootDir)) var msg = 'Please create website folder: ' + rootDir;
+
+    currentConfig.https = true;
+    if(!currentConfig.httpport) currentConfig.httpport = 80;
+    if(!currentConfig.port) currentConfig.port = 443;
+    if(!currentConfig.proxyport) currentConfig.proxyport = 443;
+    if(! ('paclink' in currentConfig)) currentConfig.paclink = '';
+    if(! ('pacpass' in currentConfig)) currentConfig.pacpass = [];
+    if(! ('websocket' in currentConfig)) currentConfig.websocket = true;
+    if(! ('behindTunnel' in currentConfig)) currentConfig.behindTunnel = false;
+    if(! ('share' in currentConfig)) currentConfig.share = [];
+    
     
     if(currentConfig.website===true){
         currentConfig.onrequest = onWebsiteRequest;
@@ -48,20 +60,30 @@ async function runServer(vConfig){
     }
     if(msg) console.warn(msg);
 
-    if(! ('https' in currentConfig)) currentConfig.https = true;
-    if(!currentConfig.httpport) currentConfig.httpport = 80;
-    if(!currentConfig.port) currentConfig.port = 443;
-    if(!currentConfig.proxyport) currentConfig.proxyport = 443;
-    if(! ('pacpass' in currentConfig)) currentConfig.pacpass = [];
-    if(! ('websocket' in currentConfig)) currentConfig.websocket = true;
-    if(! ('behindTunnel' in currentConfig)) currentConfig.behindTunnel = false;
+    if(currentConfig.share.length>0){
+        var option = {'root': currentConfig.share[0]};
+
+        if(currentConfig.share[1]) option.domain = currentConfig.share[1];
+        else option.domain = currentConfig.domain;
+
+        option.port = currentConfig.proxyport;
+        if(currentConfig.proxyip)   option.ip = currentConfig.proxyip;
+        option.https = currentConfig.https;
+        option.logging = currentConfig.logging;
+
+        if(currentConfig.onrequest) option.onNotFound = currentConfig.onrequest;
+        else currentConfig.website = '';
+
+        currentConfig.onrequest = shareModule(option);
+    }
+
 
     if(currentConfig.certdir || (currentConfig.cert && currentConfig.key)) return startProxy();
 
     const keydir1 = './greenlock.d/live/' + currentConfig.domain + '/privkey.pem';
     const certdir1 = './greenlock.d/live/' + currentConfig.domain + '/fullchain.pem';
     currentConfig.key  = path.resolve(process.cwd(), keydir1);
-    currentConfig.cert  = path.resolve(process.cwd(), certdir1);    
+    currentConfig.cert  = path.resolve(process.cwd(), certdir1); 
 
     if(!currentConfig.cloudflare_token && currentConfig.upnp){
         await client.unmap(80);
