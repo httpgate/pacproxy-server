@@ -56,6 +56,15 @@ cd pacproxy-server
 * website参数设置好后，浏览器访问： https://your.site.domain 可以显示网站的内容，也可以将一些需要分享给他人下载的文件放到website文件夹内
 
 
+### 设置share参数
+
+* 如果启用[pacproxy-share模块](https://github.com/httpgate/pacproxy-share)需要设置share参数， 此时website参数只能设置为true, false 或 ''
+
+* 如果不启用CDN加速，则只需要设置根路径,如 share : ['/share_path']
+
+* 如果启用了CDN加速，则需要将CDN域名也加上,如 share : ['/share_path', 'CDN_DOMAIN']
+
+
 ### 运行pacproxy服务：
 
 ```
