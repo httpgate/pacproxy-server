@@ -196,7 +196,7 @@ function startServer(){
 
     greenlock.init({
             packageRoot: __dirname,
-            configDir: "./greenlock.d",
+            configDir: path.resolve(process.cwd(), 'greenlock.d'),
             maintainerEmail: accountEmail,
             cluster: false,
             packageAgent: 'pacproxy'
