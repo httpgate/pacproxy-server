@@ -36,7 +36,7 @@
     "cacheable-lookup": "6.1.0",
     "greenlock-express": "^4.0.3",
     "pacproxy-js": "^1.6.8",
-    "pacproxy-share": "^1.1.7",
+    "pacproxy-share": "^1.1.8",
     "ws": "^8.17.0"
   },
   "pkg": {
